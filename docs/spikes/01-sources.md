@@ -19,7 +19,7 @@ Légende : ✅ fourni, ◐ partiel ou en texte libre, ✗ absent, ? non vérifi�
 
 | Salle | Source retenue | Jours couverts | VO/VF | Format | Lien résa | CGU / robots | Statut |
 |---|---|---|---|---|---|---|---|
-| Le Champo | SCARE | 7 j et plus (jusqu'au 17/12) | ✅ | ✗ (son seulement) | ✅ `cine.boutique` | Licence Ouverte 2.0 | **V1 (#7)** |
+| Le Champo | SCARE (cine.boutique non retenu, voir 1 bis) | 7 j et plus (jusqu'au 17/12) | ✅ | ✗ (son seulement) | ✅ `cine.boutique` | Licence Ouverte 2.0 | **V1 (#7)** |
 | Saint-André-des-Arts | SCARE | 7 j et plus (jusqu'en juin) | ✅ | ✗ | ✅ `cine.boutique` | Licence Ouverte 2.0 | **V1 (#7)** |
 | Le Grand Action | SCARE | 7 j et plus (jusqu'au 03/01) | ✅ | ✗ | ✅ `cine.boutique` | Licence Ouverte 2.0 | **V1 (#7)** |
 | Le Louxor | SCARE (événements) · Webedia en attente | ◐ événements · ~13 j via Webedia | ✗ · ✅ | ✗ · ✅ | ✗ · ✅ | Licence Ouverte · CGU Webedia : exploitation interdite sans accord | V1 partiel, accord demandé |
@@ -56,6 +56,11 @@ Couverture V1 sans accord : **3 salles complètes, 3 partielles, puis 5 de plus 
   - les séances sans `showstart` existent (Luminor), donc à ignorer.
 - Clé de séance stable : `scare:<cinema_id>:<showid>` (à confirmer sur plusieurs jours dans #7).
 - Autres salles parisiennes présentes, hors de notre liste : Le Balzac, L'Entrepôt, Studio des Ursulines, Chaplin Saint-Lambert, Cinq Caumartin, Cinéma du Panthéon, Élysées Lincoln, Luminor. À garder en tête si la liste s'élargit un jour.
+
+### 1 bis. cine.boutique / Ciné Digital (Champo, Saint-André-des-Arts, Grand Action) : non retenu
+- La page de réservation charge une SPA. Son API est sur `https://<salle>.cineoffice.fr/vad/` (`shows`, `media/<id>`…), avec un `api_token` publié dans `<meta name="api_token">`.
+- Le `robots.txt` de `cineoffice.fr` interdit tout (`User-agent: *` / `Disallow: /`). La seule exception utile est `/public/agenda/agendaexport.php`. C'est un export d'agenda Dolibarr, qui répond « Access denied » sans clé.
+- On ne l'utilise donc pas. Ce n'est pas gênant : le SCARE couvre déjà ces trois salles, avec les liens `cine.boutique` par séance.
 
 ### 2. cip-paris.fr
 Une fiche par salle (adresse, historique, lien vers le site), mais **aucune séance**. Pas d'API. Non retenu, sauf pour vérifier les adresses dans `seed.sql`.
@@ -153,15 +158,15 @@ Les correspondances par titre seul (`method = title`) sont marquées dans le rap
 - Ajout au contrat `RawScreening` : `tmdb_hint?` et `event_label?`.
 - Dépendance ajoutée pendant le spike : `tzdata` (Windows n'a pas de base de fuseaux, et `Europe/Paris` en a besoin).
 
-### #14 - salles restantes : sous-issues proposées (à créer après ton accord)
-1. **Adaptateur Dulac** (Reflet Médicis) : lire les CGU de dulaccinemas.com d'abord, et gérer la conversion UTC sans « Z ».
-2. **Adaptateur HTML Filmothèque** (grille de la semaine, format en texte libre).
-3. **Adaptateur HTML Espace Saint-Michel** (fiches film, parsing défensif).
-4. **Cinéma des Cinéastes** : trouver d'où viennent les séances, puis écrire l'adaptateur.
-5. **Club de l'Étoile** : lire les liens Cotecine publiés sur le site (date et version dans l'URL).
-6. **Demande d'accord aux salles** (email en annexe), pour les 8 salles Webedia ainsi que Christine, Écoles et Archipel.
-7. **Adaptateur Webedia** (8 salles, un seul adaptateur), **bloqué** jusqu'aux accords écrits.
-8. **Salles sans source** : badge « programme non disponible, voir le site de la salle » plutôt qu'une salle vide.
+### #14 - salles restantes : sous-issues créées
+1. **#24 Adaptateur Dulac** (Reflet Médicis) : lire les CGU de dulaccinemas.com avant la mise en service, et gérer la conversion UTC sans « Z ».
+2. **#25 Adaptateur HTML Filmothèque** (grille de la semaine, format en texte libre).
+3. **#26 Adaptateur HTML Espace Saint-Michel** (fiches film, parsing défensif).
+4. **#27 Cinéma des Cinéastes** : trouver d'où viennent les séances, puis écrire l'adaptateur.
+5. **#28 Club de l'Étoile** : lire les liens Cotecine publiés sur le site (date et version dans l'URL).
+6. **#29 Demande d'accord aux salles** (email en annexe), pour les 8 salles Webedia ainsi que Christine, Écoles et Archipel. À faire quand le site sera public.
+7. **#30 Adaptateur Webedia** (8 salles, un seul adaptateur), **bloqué** par #29.
+8. **#31 Salles sans source** : badge « programme non disponible, voir le site de la salle » plutôt qu'une salle vide.
 
 ### #13 - heure du cron
 - SCARE est mis à jour vers 02 h 15 à Paris. Cron quotidien `0 4 * * *` (UTC), soit 05 h en hiver et 06 h en été à Paris.
