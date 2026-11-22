@@ -59,7 +59,24 @@
 - `@supabase/supabase-js` pour les lectures, l'auth et les favoris.
 - État des filtres dans l'URL (`?jour=2026-11-24&salles=champo,louxor&ugc=1&patrimoine=0`), pour qu'on puisse partager un lien.
 - Affiches servies par le CDN TMDB (`image.tmdb.org`).
+- Client Supabase dans `src/lib/supabase.ts` (`null` si les variables `VITE_*` manquent, la page affiche alors une erreur au lieu de planter). Lectures dans `src/lib/<table>.ts` (`fetchCinemas`).
 - Styles : jetons clair/sombre dans `src/styles/tokens.css` (`data-theme` sur `<html>`), un `.css` par composant dans `src/components/`. Page `/styleguide` (`src/pages/Styleguide.tsx`), choisie par `src/Root.tsx` en attendant le routeur.
+
+## Déploiement du front
+
+Cloudflare Pages, par l'intégration Git (pas de GitHub Action) : chaque push sur `main` part en production, chaque PR a sa preview (lien commenté sur la PR). Site servi sur `*.pages.dev` en attendant un domaine.
+
+| Réglage Pages | Valeur |
+|---|---|
+| Production branch | `main` |
+| Root directory | `web` |
+| Build command | `npm run build` |
+| Output directory | `dist` |
+| Variables (Production et Preview) | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` |
+
+- Node : version lue dans `web/.nvmrc` (24, comme la CI).
+- Routage SPA : pas de `404.html`, donc Pages renvoie `index.html` pour tout chemin inconnu (`/styleguide`, plus tard `/film/:id`). Pas de `_redirects`.
+- Les variables `VITE_*` sont incluses dans le bundle au build : après les avoir changées, il faut relancer un déploiement.
 
 ## Flux de données
 
