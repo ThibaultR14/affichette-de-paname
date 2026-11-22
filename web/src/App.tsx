@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { CinemaList } from './components/CinemaList'
 import { rollingWeek } from './lib/days'
 
 export default function App() {
@@ -10,6 +11,7 @@ export default function App() {
       <p>
         du {week[0]} au {week[6]}
       </p>
+      <CinemaList />
     </main>
   )
 }

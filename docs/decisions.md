@@ -1,5 +1,10 @@
 # Journal des décisions
 
+## 2026-11-22 - Front : Cloudflare Pages par l'intégration Git
+- Contexte : issue #4. Il faut un déploiement auto depuis `main` et une preview par PR.
+- Décision : projet Pages connecté au repo GitHub (build par Cloudflare, root `web`, sortie `dist`). Les deux variables publiques `VITE_*` sont saisies dans le dashboard. Node fixé par `web/.nvmrc`. Le client Supabase vaut `null` sans variables, pour qu'une preview mal configurée affiche une erreur au lieu d'une page blanche.
+- Alternatives écartées : `wrangler pages deploy` dans une GitHub Action (il faut un jeton Cloudflare dans les secrets et un workflow à maintenir pour le même résultat).
+
 ## 2026-11-22 - Base : tests RLS en pgTAP, UGC vérifié, seed idempotent
 - Contexte : issue #3. La migration n'avait jamais tourné, et il fallait prouver la RLS.
 - Décision :
