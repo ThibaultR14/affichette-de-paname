@@ -1,6 +1,6 @@
 import pytest
 
-from affichette.db import Db, DbError
+from affichette.db import Db, DbError, DryRunDb, in_list
 from tests.fakes import FakeResponse, FakeSession, connection_error
 
 KEY = "service-role-secret"
@@ -66,3 +66,49 @@ def test_select_error_raises_without_key():
     with pytest.raises(DbError, match="PostgREST 401 sur title_matches") as err:
         db.select("title_matches", {})
     assert KEY not in str(err.value)
+
+
+def test_insert_posts_rows():
+    session = FakeSession(FakeResponse(201))
+    Db("https://abc.supabase.co", KEY, session=session).insert("import_runs", [{"status": "ok"}])
+    (call,) = session.calls
+    assert (call["method"], call["url"]) == ("POST", "https://abc.supabase.co/rest/v1/import_runs")
+    assert call["json"] == [{"status": "ok"}]
+    assert call["headers"]["Prefer"] == "return=minimal"
+    assert "params" not in call  # no on_conflict: a plain insert
+
+
+def test_update_patches_with_filters():
+    session = FakeSession(FakeResponse(204))
+    db = Db("https://abc.supabase.co", KEY, session=session)
+    db.update("cinemas", {"last_import_ok": True}, {"id": "eq.champo"})
+    (call,) = session.calls
+    assert call["method"] == "PATCH"
+    assert call["params"] == {"id": "eq.champo"}
+    assert call["json"] == {"last_import_ok": True}
+
+
+def test_update_without_filter_is_refused():
+    db = Db("https://abc.supabase.co", KEY, session=FakeSession())
+    with pytest.raises(DbError, match="sans filtre"):
+        db.update("screenings", {"cancelled_at": None}, {})
+
+
+def test_in_list_quotes_values():
+    assert in_list(["scare:champo:1", 'a"b,c']) == 'in.("scare:champo:1","a\\"b,c")'
+
+
+def test_dry_run_db_reads_but_never_writes():
+    session = FakeSession(FakeResponse(200, [{"id": "champo"}]))
+    dry = DryRunDb(Db("https://abc.supabase.co", KEY, session=session))
+    assert dry.select("cinemas", {"select": "id"}) == [{"id": "champo"}]
+    dry.upsert("screenings", [{"source_key": "a"}, {"source_key": "b"}], "source_key")
+    dry.insert("import_runs", [{"status": "ok"}])
+    dry.update("cinemas", {"last_import_ok": True}, {"id": "eq.champo"})
+    dry.upsert("films", [], "tmdb_id")
+    assert len(session.calls) == 1  # the select only
+    assert dry.summary() == (
+        "dry-run, rien n'a été écrit. Écritures prévues : insert import_runs ×1, "
+        "update cinemas ×1, upsert screenings ×2"
+    )
+    assert DryRunDb(None).summary() == "dry-run : aucune écriture prévue"
