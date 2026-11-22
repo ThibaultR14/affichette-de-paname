@@ -28,3 +28,6 @@ supabase/.branches/
 Thumbs.db
 .vscode/
 .claude/settings.local.json
+
+# Spike data (downloaded raw data, not versioned)
+pipeline/spikes/data/

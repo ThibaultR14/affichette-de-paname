@@ -17,7 +17,7 @@ Le site doit aussi prévenir l'utilisateur quand un film qu'il attend est progra
 ## Fonctionnalités MVP (V1)
 
 ### Séances
-- Séances des 7 prochains jours (aujourd'hui inclus) pour les 20 salles : Filmothèque du Quartier Latin, Le Champo, Christine Cinéma Club, Écoles Cinéma Club, Le Brady, Sept Parnassiens, Saint-André-des-Arts, Publicis Cinémas, Le Louxor, Cinéma des Cinéastes, Le Saint-Germain-des-Prés, Club de l'Étoile, MK2 Cultissime, L'Archipel, Le Grand Action, Reflet Médicis, Nouvel Odéon, Épée de Bois, Mac-Mahon, Espace Saint-Michel.
+- Séances des 7 prochains jours (aujourd'hui inclus) pour les 19 salles : Filmothèque du Quartier Latin, Le Champo, Christine Cinéma Club, Écoles Cinéma Club, Le Brady, Sept Parnassiens, Saint-André-des-Arts, Publicis Cinémas, Le Louxor, Cinéma des Cinéastes, Le Saint-Germain-des-Prés, Club de l'Étoile, L'Archipel, Le Grand Action, Reflet Médicis, Nouvel Odéon, Épée de Bois, Mac-Mahon, Espace Saint-Michel.
 - **Vue principale par film, pour un jour choisi** : bandeau de 7 jours en haut, puis une carte par film (affiche, titre, réalisateur, année, durée) avec la liste de ses séances (salle, heure de début et heure de fin, VO/VF, format).
 - Pour chaque séance, si la source les fournit : **VO / VF**, **format** (35mm, 70mm, 4K…), **lien de réservation** (à défaut, lien vers la page programme de la salle).
 - **Heure de fin** = début + durée TMDB, affichée seulement si la durée est connue.
@@ -31,7 +31,7 @@ Le site doit aussi prévenir l'utilisateur quand un film qu'il attend est progra
 ### Filtres (combinables, état dans l'URL)
 - Date (un des 7 jours).
 - Salle (multi-sélection).
-- **Accepte la carte UGC Illimité**. Hypothèse à vérifier : toutes les salles sauf Filmothèque du Quartier Latin, Le Saint-Germain-des-Prés, Club de l'Étoile, MK2 Cultissime et L'Archipel.
+- **Accepte la carte UGC Illimité**. Hypothèse à vérifier : toutes les salles sauf Filmothèque du Quartier Latin, Le Saint-Germain-des-Prés, Club de l'Étoile et L'Archipel.
 - **Patrimoine** (actif par défaut) : films sortis il y a plus de 20 ans, seuil glissant calculé à partir de l'année TMDB. Les séances sans correspondance TMDB, donc sans année connue, restent visibles avec le filtre actif.
 - On importe toute la programmation, films récents compris, et on peut désactiver le filtre pour tout voir.
 
@@ -57,7 +57,7 @@ Le site doit aussi prévenir l'utilisateur quand un film qu'il attend est progra
 - **V3** : recommandations personnalisées (import Letterboxd).
 - Scraping d'Allociné ou de tout agrégateur dont les CGU l'interdisent.
 - Réservation ou paiement dans le site.
-- Salles hors des 20 listées, hors Paris intra-muros.
+- Salles hors des 19 listées (MK2 Cultissime a été retiré : c'est un label de ciné-club, pas une salle), hors Paris intra-muros.
 - Page admin web : les corrections passent par le CSV et le repo.
 - Récap hebdomadaire par email, préférences d'alerte fines.
 - Application mobile native, PWA hors ligne, notifications push.
@@ -136,14 +136,9 @@ RLS : `cinemas`, `films` et `screenings` sont lisibles par tous. `favorites` et 
 
 ## Questions ouvertes
 
-1. **Source des séances** : c'est le spike de l'issue #1, à traiter avant tout le reste. Pistes, dans l'ordre :
-   1. data.gouv.fr « Programmation des cinémas indépendants » (CSV quotidien, Licence Ouverte 2.0) : quelles salles parisiennes de la liste, sur combien de jours, avec VO/VF et format ?
-   2. cip-paris.fr (une fiche par salle) : séances récupérables ? Chargées en JS (API interne) ? Conditions d'utilisation ?
-   3. Sites des salles (le réseau Action a peut-être un site commun ; vérifier aussi Écran Noir / Dulac / Cinémas Indépendants Parisiens).
-   - Livrable attendu : un tableau salle × source × jours couverts × VO/VF × format × lien de réservation × CGU, plus une recommandation. Une salle peut avoir sa propre source.
-   - Le spike teste aussi la **correspondance des titres** (souvent en français, vieux films) avec TMDB : taux de correspondance mesuré sur un échantillon réel, et stratégie (recherche `language=fr-FR`, année, réalisateur si fourni, fuzzy, overrides).
+1. ~~**Source des séances**~~ : tranchée par le spike #1 (`docs/spikes/01-sources.md`). La source principale est le jeu SCARE de data.gouv.fr, puis une source par salle. L'API Webedia n'est utilisée qu'avec l'accord écrit des salles. Christine, Écoles et Archipel sont sans source pour l'instant. Taux de correspondance TMDB mesuré : environ 86 % des films.
 2. **Liste UGC Illimité** à vérifier sur le site UGC, en notant la date de vérification.
 3. **Nom de domaine** : le nom est fixé (« L'Affichette de Paname »), le domaine reste à choisir. En attendant, le site est servi sur `*.pages.dev`.
 4. **Canal d'alerte admin** en cas d'échec d'import : issue GitHub automatique ou email Resend.
-5. **Fuseau et heure du cron** : à fixer selon l'heure de publication des sources (par ex. 6 h Europe/Paris, plus éventuellement un second passage le mercredi après-midi, jour des nouveaux programmes).
+5. ~~**Fuseau et heure du cron**~~ : `0 4 * * *` UTC chaque jour, plus `0 13 * * 3` UTC le mercredi (voir `docs/decisions.md`).
 6. **Quotas Resend** (100 emails/jour) : suffisants pour un projet perso. À surveiller si le site est partagé.
