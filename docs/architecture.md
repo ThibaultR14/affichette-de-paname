@@ -50,7 +50,9 @@
 ### `supabase/` - schéma
 - `migrations/*.sql` : tables, index, règles RLS. Appliquées avec la CLI Supabase (`supabase db push`).
 - `functions/tmdb-search/` : Edge Function (Deno) qui relaie la recherche TMDB pour l'ajout de favoris.
-- `seed.sql` : les 19 salles (adresse, UGC, source).
+- `seed.sql` : les 19 salles (adresse, UGC, source), idempotent (`on conflict do update`). `source_ref` = `cinenom` exact pour SCARE, id de nœud pour Dulac.
+- `tests/*.test.sql` : tests pgTAP (seed, RLS par rôle `anon` / `authenticated`), lancés par `supabase test db` en local et dans le job CI `supabase`.
+- `config.toml` : stack locale (`npx supabase start`, Docker). Le projet cloud est lié par `npx supabase link`. `db push` applique les migrations, `db push --include-seed` le seed.
 
 ### `web/` - front
 - React + Vite + TS, routing côté client (`/`, `/film/:tmdbId`, `/favoris`, `/connexion`).

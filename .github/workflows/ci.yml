@@ -24,6 +24,17 @@ jobs:
       - run: npm test
       - run: npm run build
 
+  supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.2.0
+      # Applies migrations + seed.sql on a blank Postgres, then runs supabase/tests (pgTAP).
+      - run: supabase db start
+      - run: supabase test db
+
   pipeline:
     runs-on: ubuntu-latest
     defaults:
