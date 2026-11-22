@@ -1,23 +1,81 @@
-/* Design tokens: see docs/design.md. Fonts and components come with the "Design system" issue. */
-:root {
-  --paper: #fbfaf7;
-  --surface: #ffffff;
-  --ink: #1b1b1b;
-  --muted: #555049;
-  --rule: #b9b4aa;
-  --pen: #2546b8;
-  color-scheme: light;
+@import './styles/tokens.css';
+
+/* Base styles: docs/design.md. Component styles live next to each component. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
-  background: var(--paper);
-  color: var(--ink);
-  font-family: 'Courier Prime', 'Courier New', monospace;
+  background: var(--color-paper);
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--color-pen);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-pen);
+  outline-offset: 2px;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(24px, 3.4vw, 36px);
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+/* Handwritten annotation in blue pen (Caveat), slightly tilted. */
+.hand {
+  display: inline-block;
+  font-family: var(--font-hand);
+  font-weight: 500;
+  color: var(--color-pen);
+}
+
+/* A button that looks like a link (theme toggle, « tout effacer »). */
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 15px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.link-button:hover {
+  color: var(--color-pen);
 }
 
 main {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px 16px;
+}
+
+@media (min-width: 640px) {
+  main {
+    padding: 32px 24px;
+  }
 }

@@ -57,6 +57,7 @@
 - `@supabase/supabase-js` pour les lectures, l'auth et les favoris.
 - État des filtres dans l'URL (`?jour=2026-11-24&salles=champo,louxor&ugc=1&patrimoine=0`), pour qu'on puisse partager un lien.
 - Affiches servies par le CDN TMDB (`image.tmdb.org`).
+- Styles : jetons clair/sombre dans `src/styles/tokens.css` (`data-theme` sur `<html>`), un `.css` par composant dans `src/components/`. Page `/styleguide` (`src/pages/Styleguide.tsx`), choisie par `src/Root.tsx` en attendant le routeur.
 
 ## Flux de données
 

@@ -1,7 +1,7 @@
 # Design - L'Affichette de Paname
 
 > Reprend la direction « C · Fanzine » de Recsys_movie (`docs/design-system.md` v0.3), adaptée aux séances. Maquette de référence : `docs/reference/maquette-fanzine-recsys.html` (celle de Recsys, pas encore celle de ce site).
-> Les TODO seront tranchés dans l'issue « Design system ».
+> TODO tranchés dans l'issue #2 (plan : `docs/plans/2-design-system.md`). Tous les composants de base sont visibles sur `/styleguide`.
 
 ## Esprit
 
@@ -24,8 +24,8 @@
 
 - Un seul accent : le stylo bleu.
 - Contraste AA vérifié par un test (`contrast.test.ts`, repris de Recsys), dans les deux thèmes.
-- TODO : quel thème par défaut ? Recsys s'ouvre en sombre. Ici, l'usage est mobile en extérieur, ce qui plaide pour le clair, avec une bascule.
-- TODO : couleurs des pastilles de séance (35mm, VO, UGC), à garder sobres. Proposition : bordure encre, sans fond coloré.
+- **Thème par défaut** : celui du système (`prefers-color-scheme`), clair si le système ne dit rien. La bascule « passer en sombre » / « passer en clair » est mémorisée dans le navigateur (clé `affichette-theme`, seule donnée stockée). Un script dans `index.html` applique le thème avant le premier rendu. Jetons dans `web/src/styles/tokens.css`.
+- **Pastilles de séance** (`vo`, `vf`, `35mm`, `70mm`, `4k`, `ugc`) : minuscules, 13 px gras, bordure 1,5 px encre, coins 3 px, sans fond ni couleur. `ugc` se met à côté du nom de la salle, les autres à côté de l'heure. Les pointillés restent réservés aux filtres actifs.
 
 ## Typographie
 
@@ -57,7 +57,8 @@ Aucune requête vers Google Fonts.
   - « réalisateur, année · durée » en `muted` ;
   - liste des séances du jour, groupées par salle : nom de la salle, puis les heures (« 14:00 → 16:05 »), chacune avec ses pastilles (`VO`, `35mm`). Chaque heure est un lien vers la réservation.
 - Cœur favori en haut à droite, sur l'étiquette « ✱ » de Recsys.
-- TODO : sur mobile, la carte reprend-elle la forme photo ou passe-t-elle en ligne compacte (vignette + séances) ? À maquetter.
+- **Sous 640 px : ligne compacte** : vignette 2:3 de 80 px à gauche (scotch gardé, sans rotation), titre et méta à droite, séances en dessous sur toute la largeur. **À partir de 640 px : carte photo** inclinée (±1,8° au plus), dans une grille `minmax(260px, 1fr)`. Les séances prennent de la place : une affiche pleine largeur ferait défiler deux écrans par film.
+- L'heure de fin n'apparaît que si la durée TMDB est connue. Les heures sont des liens vers la réservation (nouvel onglet).
 - Séance sans fiche TMDB : carte sans affiche (cadre en pointillés), titre de la salle, annotation Caveat « (on n'a pas trouvé ce film, désolé) ».
 
 ### Filtres
