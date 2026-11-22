@@ -51,11 +51,11 @@
 - `main.py` : orchestration, avec `--dry-run` et `--cinema <id>`.
 
 ### `supabase/` - schéma
-- `migrations/*.sql` : tables, index, règles RLS. Appliquées avec la CLI Supabase (`supabase db push`).
+- `migrations/*.sql` : tables, index, règles RLS. Appliquées au projet cloud avec `npx supabase db push --remote` (`--dry-run` pour voir la liste d'abord). Sans `--remote`, la CLI vise la stack locale.
 - `functions/tmdb-search/` : Edge Function (Deno) qui relaie la recherche TMDB pour l'ajout de favoris.
 - `seed.sql` : les 19 salles (adresse, UGC, source), idempotent (`on conflict do update`). `source_ref` = `cinenom` exact pour SCARE, id de nœud pour Dulac.
 - `tests/*.test.sql` : tests pgTAP (seed, RLS par rôle `anon` / `authenticated`), lancés par `supabase test db` en local et dans le job CI `supabase`.
-- `config.toml` : stack locale (`npx supabase start`, Docker). Le projet cloud est lié par `npx supabase link`. `db push` applique les migrations, `db push --include-seed` le seed.
+- `config.toml` : stack locale (`npx supabase start`, Docker). Le projet cloud est lié par `npx supabase link`. `db push --remote` applique les migrations, `db push --remote --include-seed` le seed. En local, `npx supabase db reset` rejoue migrations et seed.
 
 ### `web/` - front
 - React + Vite + TS, routing côté client (`/`, `/film/:tmdbId`, `/favoris`, `/connexion`).
