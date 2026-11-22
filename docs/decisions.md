@@ -11,6 +11,29 @@
   - `/styleguide` servi aussi en production, chargé à la demande, sans routeur pour l'instant.
 - Alternatives écartées : clair forcé (éblouit le soir) ; sombre par défaut comme Recsys (usage en extérieur) ; Tailwind comme Recsys (une dépendance et une config de plus pour une dizaine de composants) ; carte photo sur mobile (trop haute).
 
+## 2026-11-22 - Sources des séances : SCARE d'abord, une source par salle ensuite
+- Contexte : spike #1 (`docs/spikes/01-sources.md`). Aucune source unique ne couvre les salles, et cip-paris.fr ne publie pas de séances.
+- Décision :
+  - Source principale : le jeu ouvert SCARE « Programmation des cinémas indépendants » (data.gouv.fr, Licence Ouverte 2.0). Il couvre complètement Champo, Saint-André-des-Arts et Grand Action, et les événements de Louxor, Sept Parnassiens et Épée de Bois. C'est le premier adaptateur (#7).
+  - Ensuite, une source par salle : API Dulac (Reflet Médicis), HTML des sites de Filmothèque, Espace Saint-Michel, Cinéma des Cinéastes et Club de l'Étoile. Les CGU sont à confirmer dans #14.
+  - Le `tmdb_id` fourni par SCARE sert d'indice de correspondance, juste après `manual_overrides.csv` (accord de 107 sur 107 avec notre recherche).
+- Alternatives écartées : cip-paris.fr (pas de séances) ; billetterie Cotecine (robots.txt `Disallow: /*`).
+
+## 2026-11-22 - API Webedia exclue sans accord écrit des salles
+- Contexte : 8 salles (Louxor, Brady, Mac-Mahon, Épée de Bois, Saint-Germain-des-Prés, Nouvel Odéon, Publicis, Sept Parnassiens) exposent une API JSON complète sur leur domaine. Elle est fournie par Webedia et liée à Allociné (codes salle Allociné, CDN acsta.net, réservation via tickets.allocine.fr pour le Nouvel Odéon). La CGU type interdit d'exploiter le site sans autorisation expresse.
+- Décision : on ne la collecte pas tant qu'on n'a pas l'accord écrit de la salle. Un email de demande est préparé (annexe du spike) et propose aussi de rejoindre le jeu SCARE. L'adaptateur Webedia est une sous-issue bloquée de #14.
+- Alternatives écartées : l'utiliser en « usage prudent » (zone grise vis-à-vis des CGU et de la règle « pas d'Allociné ») ; l'exclure définitivement (on perdrait la meilleure source si les salles acceptent).
+
+## 2026-11-22 - MK2 Cultissime retiré, salles sans source documentées
+- Contexte : « MK2 Cultissime » est un label de ciné-club mk2 joué dans plusieurs salles mk2, pas une salle, et les CGU mk2 interdisent la réutilisation. Christine Cinéma Club, Écoles Cinéma Club et L'Archipel n'ont pas d'autre source que la billetterie Cotecine, bloquée par robots.txt.
+- Décision : MK2 Cultissime sort de la liste (19 salles). Christine, Écoles et Archipel restent dans la liste, marquées sans source, et sont incluses dans la demande d'accord.
+- Alternatives écartées : les garder sans séances et sans explication.
+
+## 2026-11-22 - Cron : 04 h UTC chaque jour, plus 13 h UTC le mercredi
+- Contexte : SCARE est mis à jour vers 02 h 15 à Paris. Les salles en HTML publient leur nouvelle semaine le mercredi.
+- Décision : `0 4 * * *` et `0 13 * * 3` (UTC) pour #13.
+- Alternatives écartées : un horaire fixe à l'heure de Paris (le cron GitHub ne connaît que l'UTC, et une heure d'écart l'été ne change rien ici).
+
 ## 2026-11-22 - Lint front : oxlint plutôt qu'ESLint
 - Contexte : le template Vite actuel (Vite 8) génère une config oxlint et non plus ESLint.
 - Décision : garder oxlint, avec les plugins react, typescript et oxc, plus Prettier pour le format. `npm run lint` lance les deux, et `npm run typecheck` lance `tsc -b`.

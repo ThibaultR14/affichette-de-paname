@@ -1,6 +1,6 @@
 # Architecture - L'Affichette de Paname
 
-> Le comment. Le quoi est dans `SPEC.md`. La source des séances dépend du spike #1 : la partie « adaptateurs » ci-dessous est un contrat, pas encore une implémentation.
+> Le comment. Le quoi est dans `SPEC.md`. Les sources des séances ont été choisies par le spike #1 (`docs/spikes/01-sources.md`). La partie « adaptateurs » ci-dessous est un contrat, implémenté à partir de #7.
 
 ## Vue d'ensemble
 
@@ -36,10 +36,12 @@
 ## Composants
 
 ### `pipeline/` - job d'import (Python)
-- `sources/` : un adaptateur par source. Chacun expose `fetch(cinema, start, end) -> list[RawScreening]`. `RawScreening` contient `source_key, cinema_id, raw_title, starts_at, version?, format?, booking_url?, runtime_hint?, year_hint?, director_hint?`.
+- `sources/` : un adaptateur par source. Chacun expose `fetch(cinema, start, end) -> list[RawScreening]`. `RawScreening` contient `source_key, cinema_id, raw_title, starts_at, version?, format?, booking_url?, runtime_hint?, year_hint?, director_hint?, tmdb_hint?, event_label?`.
+  - `scare.py` : jeu ouvert SCARE (data.gouv.fr, API data-fair), plusieurs salles par appel. Premier adaptateur (#7).
+  - Puis, dans #14 : `dulac.py` (Reflet Médicis, heures UTC sans « Z ») et un adaptateur HTML par site (Filmothèque, Espace Saint-Michel, Cinéma des Cinéastes, Club de l'Étoile). `webedia.py` (8 salles) n'est écrit qu'avec l'accord écrit des salles.
 - `normalize.py` : fuseau Europe/Paris, conversion en UTC, normalisation VO/VOSTFR/VF et 35mm/70mm/4K/DCP.
 - `tmdb.py` : client TMDB repris de Recsys_movie (`enrich_tmdb.py`) : jeton Bearer `TMDB_READ_TOKEN`, rate limiter, réessais sur 429, cache JSON réutilisé moins de 30 jours et purgé au-delà de 6 mois (CGU TMDB). Ne journalise jamais d'URL.
-- `matching.py` : titre → `tmdb_id`. Ordre de priorité : `manual_overrides.csv`, puis la table `title_matches`, puis la recherche TMDB (`language=fr-FR`, avec l'année si on l'a), puis le score (titre normalisé, année ±1, réalisateur si fourni). On ne fait rien sous le seuil de confiance (`tmdb_id = null`). La normalisation des titres reprend `titles.py` de Recsys.
+- `matching.py` : titre → `tmdb_id`. Ordre de priorité : `manual_overrides.csv`, puis le `tmdb_hint` de la source (SCARE), puis la table `title_matches`, puis la recherche TMDB (`language=fr-FR`, avec l'année si on l'a), puis le score (titre normalisé, année ±1, réalisateur si fourni). On ne fait rien sous le seuil de confiance (`tmdb_id = null`). La normalisation des titres reprend `titles.py` de Recsys.
 - `upsert.py` : upsert par `source_key`. Pour une salle dont l'import a réussi, une séance future absente du nouvel import reçoit `cancelled_at`. Une salle en échec n'est pas touchée.
 - `alerts.py` : favoris nouvellement programmés, puis un email groupé par utilisateur.
 - `report.py` : entrée `import_runs`, résumé dans le log Actions, issue GitHub si une salle échoue.
@@ -48,7 +50,7 @@
 ### `supabase/` - schéma
 - `migrations/*.sql` : tables, index, règles RLS. Appliquées avec la CLI Supabase (`supabase db push`).
 - `functions/tmdb-search/` : Edge Function (Deno) qui relaie la recherche TMDB pour l'ajout de favoris.
-- `seed.sql` : les 20 salles (adresse, UGC, source).
+- `seed.sql` : les 19 salles (adresse, UGC, source).
 
 ### `web/` - front
 - React + Vite + TS, routing côté client (`/`, `/film/:tmdbId`, `/favoris`, `/connexion`).
