@@ -1,5 +1,14 @@
 # Journal des décisions
 
+## 2026-11-22 - Client TMDB : Bearer seul, écriture en base par PostgREST
+- Contexte : issue #5, portage du client TMDB de Recsys et remplissage de `films`.
+- Décision :
+  - jeton Bearer `TMDB_READ_TOKEN` uniquement : le repli de Recsys sur la clé v3 `api_key` est retiré, car elle passe dans l'URL et finirait dans un log ou une trace d'exception ;
+  - les erreurs `requests` ne sont jamais recopiées (leur message contient l'URL) : on garde le type et le chemin d'API ;
+  - écriture par un client PostgREST minimal (`affichette/db.py`, `requests`, `Prefer: resolution=merge-duplicates`) ;
+  - `films.tmdb_fetched_at` = date de l'appel TMDB (celle du cache), pour que le refresh à 30 jours et la purge à 6 mois en base reposent sur l'âge réel de la donnée.
+- Alternatives écartées : le paquet `supabase` (dépendances lourdes pour quelques upserts) ; `tmdb_fetched_at = now()` à l'écriture (une donnée tirée d'un cache de 29 jours paraîtrait neuve).
+
 ## 2026-11-22 - Front : Cloudflare Pages par l'intégration Git
 - Contexte : issue #4. Il faut un déploiement auto depuis `main` et une preview par PR.
 - Décision : projet Pages connecté au repo GitHub (build par Cloudflare, root `web`, sortie `dist`). Les deux variables publiques `VITE_*` sont saisies dans le dashboard. Node fixé par `web/.nvmrc`. Le client Supabase vaut `null` sans variables, pour qu'une preview mal configurée affiche une erreur au lieu d'une page blanche.

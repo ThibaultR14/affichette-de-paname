@@ -1,0 +1,23 @@
+{
+  "adult": false,
+  "id": 426,
+  "imdb_id": "tt0052357",
+  "original_language": "en",
+  "original_title": "Vertigo",
+  "title": "Sueurs froides",
+  "release_date": "1958-05-09",
+  "runtime": 128,
+  "overview": "Scottie Ferguson, policier sujet au vertige, est chargé de suivre la femme d'un ami.",
+  "poster_path": "/fixture-poster-426.jpg",
+  "vote_count": 6000,
+  "genres": [{ "id": 9648, "name": "Mystère" }],
+  "credits": {
+    "cast": [{ "id": 854, "name": "James Stewart", "character": "Scottie" }],
+    "crew": [
+      { "id": 2636, "name": "Alfred Hitchcock", "job": "Director", "department": "Directing" },
+      { "id": 2636, "name": "Alfred Hitchcock", "job": "Producer", "department": "Production" },
+      { "id": 2636, "name": "Alfred Hitchcock", "job": "Director", "department": "Directing" },
+      { "id": 2042, "name": "Samuel A. Taylor", "job": "Screenplay", "department": "Writing" }
+    ]
+  }
+}
