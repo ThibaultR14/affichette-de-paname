@@ -10,11 +10,13 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import math
 import os
 import random
+import re
 import threading
 import time
 from collections.abc import Callable
@@ -241,3 +243,61 @@ class Tmdb:
             return None if raw is None else slim_movie(raw)
 
         return self._cached("movie", str(int(tmdb_id)), fetch)
+
+    def search_movie(self, query: str, year: int | None = None) -> list[dict]:
+        """/search/movie (fr-FR), first page: [{id, title, original_title, release_date}]."""
+        params: dict[str, Any] = {"query": query, "language": LANGUAGE, "include_adult": "false"}
+        if year:
+            params["year"] = int(year)
+
+        def fetch() -> dict:
+            raw = self._get("/search/movie", params) or {}
+            return {"results": [slim_title(r) for r in raw.get("results") or []]}
+
+        key = cache_key(query, str(year or ""))
+        return self._cached("search", key, fetch).data["results"]
+
+    def search_person(self, name: str) -> list[dict]:
+        """/search/person, first page: [{id, name, known_for_department}]."""
+
+        def fetch() -> dict:
+            raw = self._get("/search/person", {"query": name, "include_adult": "false"}) or {}
+            people = [
+                {
+                    "id": p.get("id"),
+                    "name": p.get("name"),
+                    "known_for_department": p.get("known_for_department"),
+                }
+                for p in raw.get("results") or []
+            ]
+            return {"results": people}
+
+        return self._cached("person", cache_key(name), fetch).data["results"]
+
+    def person_directing(self, person_id: int) -> list[dict]:
+        """Films the person directed (/person/{id}/movie_credits, crew job Director, fr-FR)."""
+
+        def fetch() -> dict:
+            raw = self._get(f"/person/{person_id}/movie_credits", {"language": LANGUAGE}) or {}
+            crew = raw.get("crew") or []
+            films = [slim_title(c) for c in crew if c.get("job") == "Director"]
+            return {"results": films}
+
+        return self._cached("person_credits", str(int(person_id)), fetch).data["results"]
+
+
+def slim_title(raw: dict) -> dict:
+    """What matching needs from a search / credits entry."""
+    return {
+        "id": raw.get("id"),
+        "title": raw.get("title") or None,
+        "original_title": raw.get("original_title") or None,
+        "release_date": raw.get("release_date") or None,
+    }
+
+
+def cache_key(*parts: str) -> str:
+    """Filesystem-safe cache key: readable slug + short hash of the exact query."""
+    text = "\x1f".join(parts)
+    slug = re.sub(r"[^a-z0-9]+", "_", text.casefold()).strip("_")[:60] or "q"
+    return f"{slug}_{hashlib.sha1(text.encode('utf-8')).hexdigest()[:10]}"

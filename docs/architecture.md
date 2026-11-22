@@ -41,20 +41,21 @@
   - Puis, dans #14 : `dulac.py` (Reflet Médicis, heures UTC sans « Z ») et un adaptateur HTML par site (Filmothèque, Espace Saint-Michel, Cinéma des Cinéastes, Club de l'Étoile). `webedia.py` (8 salles) n'est écrit qu'avec l'accord écrit des salles.
 - `normalize.py` : fuseau Europe/Paris, conversion en UTC, normalisation VO/VOSTFR/VF et 35mm/70mm/4K/DCP.
 - `tmdb.py` : client TMDB repris de Recsys_movie (`enrich_tmdb.py`) : jeton Bearer `TMDB_READ_TOKEN`, rate limiter, réessais sur 429, 5xx et erreurs réseau, `language=fr-FR`, cache JSON réutilisé moins de 30 jours et purgé au-delà de 6 mois (CGU TMDB). Ne journalise jamais d'URL. Cache dans `pipeline/data/cache/tmdb/<type>/<clé>.json` (ignoré par git), 404 compris.
-- `db.py` : écriture Supabase par PostgREST (`requests` seul, sans le paquet `supabase`) : `Db.from_env().upsert(table, rows, on_conflict)` avec la clé `service_role` en en-tête, jamais journalisée.
+- `db.py` : accès Supabase par PostgREST (`requests` seul, sans le paquet `supabase`) : `Db.from_env().upsert(table, rows, on_conflict)` et `select(table, params)` avec la clé `service_role` en en-tête, jamais journalisée.
 - `films.py` : `upsert_film(tmdb_id, tmdb, db)` remplit `films` (titre fr, à défaut original ; `tmdb_fetched_at` = date de l'appel TMDB, pas de l'écriture). Essai à la main : `uv run python -m affichette.films <id>… --dry-run`.
-- `matching.py` : titre → `tmdb_id`. Ordre de priorité : `manual_overrides.csv`, puis le `tmdb_hint` de la source (SCARE), puis la table `title_matches`, puis la recherche TMDB (`language=fr-FR`, avec l'année si on l'a), puis le score (titre normalisé, année ±1, réalisateur si fourni). On ne fait rien sous le seuil de confiance (`tmdb_id = null`). La normalisation des titres reprend `titles.py` de Recsys.
+- `matching.py` : titre → `tmdb_id` (`Matcher.match(MatchQuery)`). Ordre : `manual_overrides.csv` (titre normalisé + salle, salle vide = toutes, `tmdb_id` vide = « pas un film »), puis le `tmdb_hint` de la source (SCARE), puis le cache `title_matches` (clé titre normalisé + salle + année ; trouvé réutilisé 30 jours, non trouvé 7 jours), puis la recherche TMDB `fr-FR` avec les règles du spike : réalisateur sur les 5 premiers résultats (variantes d'orthographe tolérées), titre seul sur un premier résultat sans homonyme, filmographie du réalisateur en repli, année ±1 si la source la donne. Sous le seuil : `tmdb_id = null`. `title_matches.method` ∈ `override, source, director, title, none` ; seuls les résultats de recherche y sont écrits, avec la raison d'un échec (`DbTitleMatchStore` : lecture par salle paginée à 1 000 lignes, `max_rows` de Supabase ; un upsert en fin de run). `MatchReport.summary()` : séances par méthode, non-correspondances (événements à part), correspondances par titre seul à relire. Essai : `uv run python -m affichette.matching "EVA" --director "LOSEY Joseph"`. Mesure sur l'échantillon du spike : `uv run python -m scripts.eval_matching [--sweep]`.
+- `tmdb.py` sert aussi la recherche : `search_movie`, `search_person`, `person_directing` (réponses réduites, même cache). Les réalisateurs d'un candidat viennent de `movie(id)`, déjà utilisé pour `films`.
 - `upsert.py` : upsert par `source_key`. Pour une salle dont l'import a réussi, une séance future absente du nouvel import reçoit `cancelled_at`. Une salle en échec n'est pas touchée.
 - `alerts.py` : favoris nouvellement programmés, puis un email groupé par utilisateur.
 - `report.py` : entrée `import_runs`, résumé dans le log Actions, issue GitHub si une salle échoue.
 - `main.py` : orchestration, avec `--dry-run` et `--cinema <id>`.
 
 ### `supabase/` - schéma
-- `migrations/*.sql` : tables, index, règles RLS. Appliquées avec la CLI Supabase (`supabase db push`).
+- `migrations/*.sql` : tables, index, règles RLS. Appliquées au projet cloud avec `npx supabase db push --remote` (`--dry-run` pour voir la liste d'abord). Sans `--remote`, la CLI vise la stack locale.
 - `functions/tmdb-search/` : Edge Function (Deno) qui relaie la recherche TMDB pour l'ajout de favoris.
 - `seed.sql` : les 19 salles (adresse, UGC, source), idempotent (`on conflict do update`). `source_ref` = `cinenom` exact pour SCARE, id de nœud pour Dulac.
 - `tests/*.test.sql` : tests pgTAP (seed, RLS par rôle `anon` / `authenticated`), lancés par `supabase test db` en local et dans le job CI `supabase`.
-- `config.toml` : stack locale (`npx supabase start`, Docker). Le projet cloud est lié par `npx supabase link`. `db push` applique les migrations, `db push --include-seed` le seed.
+- `config.toml` : stack locale (`npx supabase start`, Docker). Le projet cloud est lié par `npx supabase link`. `db push --remote` applique les migrations, `db push --remote --include-seed` le seed. En local, `npx supabase db reset` rejoue migrations et seed.
 
 ### `web/` - front
 - React + Vite + TS, routing côté client (`/`, `/film/:tmdbId`, `/favoris`, `/connexion`).

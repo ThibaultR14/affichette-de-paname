@@ -1,5 +1,16 @@
 # Journal des décisions
 
+## 2026-11-22 - Correspondance TMDB : seuils du spike, réalisateur tolérant, cache par salle
+- Contexte : issue #6, `matching.py`. Le seuil devait être réglé sur l'échantillon du spike (220 titres SCARE), avec un taux au moins égal à celui mesuré (149/220).
+- Décision :
+  - seuils du spike conservés : réalisateur + similarité de titre ≥ 0,7, titre seul ≥ 0,9 sur le premier résultat, refus si plusieurs homonymes à ≥ 0,95, repli par filmographie à ≥ 0,8 ;
+  - nom de réalisateur comparé mot à mot avec une similarité ≥ 0,85 : TMDB écrit maintenant « Mikheil Kalatozishvili » là où SCARE donne « Mikhail Kalatazov ». On tient compte de tous les réalisateurs listés par la source, pas seulement du premier ;
+  - mesure (`scripts/eval_matching.py`, sans l'id SCARE ni overrides) : **149/220 (67,7 %), accord SCARE 107/107**, mêmes films que le spike sur les 220 titres. Un titre seul à 0,85 donnerait 151/220 (deux films justes de plus : *Shaun le mouton*, *Les Zazous*), mais il accepterait un premier résultat dont le réalisateur ne concorde pas, ce qui est le cas d'un remake. On garde 0,9 et on corrige ces cas par override ;
+  - cache `title_matches` par (titre normalisé, salle, année), car le réalisateur fourni change d'une source à l'autre. Trouvé réutilisé 30 jours, non trouvé 7 jours. Ni les overrides ni l'id de la source n'y sont écrits ;
+  - `title_matches.method` passe de `exact/fuzzy/override/none` à `override/source/director/title/none`, et une colonne `reason` garde la cause d'un « non trouvé » pour le rapport des imports suivants (migration, table vide) ;
+  - `manual_overrides.csv` : `title,cinema_id,tmdb_id,note`, titre brut accepté (normalisé au chargement), salle vide = toutes, `tmdb_id` vide = « pas un film ».
+- Alternatives écartées : seuil à 0,85 (voir plus haut) ; cache partagé entre salles (un même titre sans réalisateur dans une salle et avec réalisateur dans une autre donnerait le même résultat) ; recherche TMDB filtrée par année dès le premier appel (le paramètre `year` est strict, et l'année d'une copie restaurée diffère souvent d'un an).
+
 ## 2026-11-22 - Client TMDB : Bearer seul, écriture en base par PostgREST
 - Contexte : issue #5, portage du client TMDB de Recsys et remplissage de `films`.
 - Décision :

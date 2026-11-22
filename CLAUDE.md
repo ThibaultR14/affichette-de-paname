@@ -6,7 +6,7 @@ Site qui centralise sur 7 jours les séances des cinémas indépendants parisien
 - test : `cd web && npm test` · `cd pipeline && uv run pytest`
 - lint : `cd web && npm run lint && npm run typecheck` · `cd pipeline && uv run ruff check . && uv run ruff format --check .`
 - format : `cd web && npm run format` · `cd pipeline && uv run ruff format .`
-- schéma : `supabase/migrations/*.sql` (appliqué avec `npx supabase db push`), salles dans `supabase/seed.sql`
+- schéma : `supabase/migrations/*.sql` (projet cloud : `npx supabase db push --remote` ; sans `--remote`, la CLI vise la stack locale), salles dans `supabase/seed.sql`
 - test BDD : `npx supabase start` (Docker) puis `npx supabase test db` (pgTAP, `supabase/tests/`)
 - Windows : `npm test` passe par `web/scripts/vitest.mjs` (bug Vitest avec `c:` en minuscule). Ne pas appeler `npx vitest` directement.
 

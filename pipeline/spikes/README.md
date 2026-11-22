@@ -15,5 +15,5 @@ uv run python spikes/tmdb_match_probe.py --limit 220   # --offline-titles pour n
 ```
 
 - Les données téléchargées vont dans `spikes/data/`, qui n'est pas versionné. Les réponses TMDB vont dans `data/cache/spike_tmdb/`, qui n'est pas versionné non plus (CGU TMDB).
-- Supprime `data/cache/spike_tmdb/` une fois le spike clos, et au plus tard 6 mois après (CGU TMDB). Rien ne le purge automatiquement.
+- `data/cache/spike_tmdb/` a été supprimé à la clôture du spike (#6, 2026-11-22). Si tu relances `tmdb_match_probe.py`, supprime-le de nouveau après usage, au plus tard 6 mois après (CGU TMDB) : rien ne le purge automatiquement. Pour mesurer la correspondance, préfère `uv run python -m scripts.eval_matching`, qui passe par le cache du pipeline (purgé à 6 mois).
 - Le jeton `TMDB_READ_TOKEN` est lu dans `pipeline/.env` ou, à défaut, dans le `.env` de Recsys. Il n'est jamais affiché.
