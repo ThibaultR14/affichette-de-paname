@@ -1,5 +1,13 @@
 # Journal des décisions
 
+## 2026-11-22 - Base : tests RLS en pgTAP, UGC vérifié, seed idempotent
+- Contexte : issue #3. La migration n'avait jamais tourné, et il fallait prouver la RLS.
+- Décision :
+  - tests pgTAP dans `supabase/tests/`, joués par `supabase test db` sur la stack locale et dans un job CI `supabase` qui part d'une base vierge ;
+  - UGC Illimité : la liste officielle UGC (22/11/2026) inclut toutes nos salles sauf le Club de l'Étoile. L'hypothèse de la SPEC (4 salles exclues) était fausse ;
+  - `seed.sql` en `on conflict do update`, qu'on peut rejouer sur le projet cloud ; les adresses trouvées seulement sur cip-paris.fr ou un annuaire sont marquées dans le fichier.
+- Alternatives écartées : un test RLS en Python avec la clé anon (il faut une base qui tourne et des clés dans les tests du pipeline, qui doivent rester sans réseau) ; un seed par `insert` simple (casse au second passage).
+
 ## 2026-11-22 - Design system : thème du système, CSS sans Tailwind
 - Contexte : issue #2, TODO de `docs/design.md`.
 - Décision :

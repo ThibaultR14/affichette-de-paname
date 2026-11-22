@@ -31,7 +31,7 @@ Le site doit aussi prévenir l'utilisateur quand un film qu'il attend est progra
 ### Filtres (combinables, état dans l'URL)
 - Date (un des 7 jours).
 - Salle (multi-sélection).
-- **Accepte la carte UGC Illimité**. Hypothèse à vérifier : toutes les salles sauf Filmothèque du Quartier Latin, Le Saint-Germain-des-Prés, Club de l'Étoile et L'Archipel.
+- **Accepte la carte UGC Illimité**. Vérifié le 2026-11-22 sur [la liste UGC](https://www.ugc.fr/cinemas-acceptant-ui.html) : toutes les salles sauf le Club de l'Étoile.
 - **Patrimoine** (actif par défaut) : films sortis il y a plus de 20 ans, seuil glissant calculé à partir de l'année TMDB. Les séances sans correspondance TMDB, donc sans année connue, restent visibles avec le filtre actif.
 - On importe toute la programmation, films récents compris, et on peut désactiver le filtre pour tout voir.
 
@@ -137,7 +137,7 @@ RLS : `cinemas`, `films` et `screenings` sont lisibles par tous. `favorites` et 
 ## Questions ouvertes
 
 1. ~~**Source des séances**~~ : tranchée par le spike #1 (`docs/spikes/01-sources.md`). La source principale est le jeu SCARE de data.gouv.fr, puis une source par salle. L'API Webedia n'est utilisée qu'avec l'accord écrit des salles. Christine, Écoles et Archipel sont sans source pour l'instant. Taux de correspondance TMDB mesuré : environ 86 % des films.
-2. **Liste UGC Illimité** à vérifier sur le site UGC, en notant la date de vérification.
+2. ~~**Liste UGC Illimité**~~ : vérifiée le 2026-11-22 (#3), seul le Club de l'Étoile ne l'accepte pas. À revérifier de temps en temps (`ugc_verified_at`).
 3. **Nom de domaine** : le nom est fixé (« L'Affichette de Paname »), le domaine reste à choisir. En attendant, le site est servi sur `*.pages.dev`.
 4. **Canal d'alerte admin** en cas d'échec d'import : issue GitHub automatique ou email Resend.
 5. ~~**Fuseau et heure du cron**~~ : `0 4 * * *` UTC chaque jour, plus `0 13 * * 3` UTC le mercredi (voir `docs/decisions.md`).
