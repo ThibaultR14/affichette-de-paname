@@ -1,0 +1,23 @@
+/* Design tokens: see docs/design.md. Fonts and components come with the "Design system" issue. */
+:root {
+  --paper: #fbfaf7;
+  --surface: #ffffff;
+  --ink: #1b1b1b;
+  --muted: #555049;
+  --rule: #b9b4aa;
+  --pen: #2546b8;
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Courier Prime', 'Courier New', monospace;
+}
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}

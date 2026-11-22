@@ -1,0 +1,30 @@
+# Secrets
+.env
+.env.*
+!.env.example
+web/.env.local
+
+# Node
+node_modules/
+web/dist/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Pipeline data (TMDB cache must not be committed: TMDB terms)
+pipeline/data/cache/*
+!pipeline/data/cache/.gitkeep
+
+# Supabase local
+supabase/.temp/
+supabase/.branches/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.claude/settings.local.json
