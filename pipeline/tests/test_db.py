@@ -47,3 +47,22 @@ def test_from_env_requires_both_variables(monkeypatch):
     monkeypatch.delenv("SUPABASE_SERVICE_ROLE_KEY", raising=False)
     with pytest.raises(DbError, match="SUPABASE_SERVICE_ROLE_KEY"):
         Db.from_env()
+
+
+def test_select_gets_rows_with_params():
+    session = FakeSession(FakeResponse(200, [{"tmdb_id": 1}]))
+    db = Db("https://abc.supabase.co", KEY, session=session)
+    rows = db.select("title_matches", {"select": "tmdb_id", "cinema_id": "eq.champo"})
+    assert rows == [{"tmdb_id": 1}]
+    (call,) = session.calls
+    assert call["method"] == "GET"
+    assert call["url"] == "https://abc.supabase.co/rest/v1/title_matches"
+    assert call["params"] == {"select": "tmdb_id", "cinema_id": "eq.champo"}
+
+
+def test_select_error_raises_without_key():
+    session = FakeSession(FakeResponse(401, {"message": "bad jwt"}))
+    db = Db("https://abc.supabase.co", KEY, session=session)
+    with pytest.raises(DbError, match="PostgREST 401 sur title_matches") as err:
+        db.select("title_matches", {})
+    assert KEY not in str(err.value)

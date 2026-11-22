@@ -34,6 +34,16 @@ class Db:
             os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "").strip(),
         )
 
+    def select(self, table: str, params: dict[str, str]) -> list[dict[str, Any]]:
+        """GET rows with PostgREST query params (`select`, `col=eq.x`…)."""
+        try:
+            r = self.session.get(f"{self.rest}/{table}", params=params, timeout=TIMEOUT_S)
+        except requests.RequestException as exc:
+            raise DbError(f"Supabase injoignable ({type(exc).__name__}) sur {table}") from None
+        if r.status_code >= 300:
+            raise DbError(f"PostgREST {r.status_code} sur {table} : {r.text[:500]}")
+        return r.json()
+
     def upsert(self, table: str, rows: list[dict[str, Any]], on_conflict: str) -> None:
         """Insert or update `rows` on the `on_conflict` columns (all rows: same keys)."""
         if not rows:

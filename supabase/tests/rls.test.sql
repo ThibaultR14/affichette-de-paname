@@ -2,7 +2,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(24);
+select plan(25);
 
 -- Fixtures, as the superuser: two users (the trigger creates their profiles), one
 -- favorite each, one film and one screening, one title match and one import run.
@@ -18,7 +18,7 @@ insert into public.films (tmdb_id, title, year) values (11, 'le mépris', 1963);
 insert into public.screenings (cinema_id, tmdb_id, raw_title, starts_at, source_key)
 values ('champo', 11, 'Le Mépris', '2026-11-24 19:30+00', 'test:1');
 insert into public.title_matches (normalized_title, tmdb_id, method)
-values ('le mepris', 11, 'exact');
+values ('le mepris', 11, 'title');
 insert into public.import_runs (cinema_id, status) values ('champo', 'ok');
 
 -- Seed
@@ -41,6 +41,9 @@ select is(
   0, 'seed: scare and dulac cinemas have a source_ref');
 select is(
   (select count(*)::int from public.profiles), 2, 'trigger: one profile per new user');
+select throws_ok(
+  $$insert into public.title_matches (normalized_title, tmdb_id, method) values ('x', 1, 'exact')$$,
+  '23514', null, 'title_matches: method limited to the matching strategy (#6)');
 
 -- anon: public data is readable
 set local role anon;

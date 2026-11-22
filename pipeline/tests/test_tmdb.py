@@ -273,3 +273,69 @@ def test_default_cache_dir_is_git_ignored():
     assert tmdb_mod.CACHE_DIR.parts[-3:] == ("data", "cache", "tmdb")
     gitignore = (tmdb_mod.CACHE_DIR.parents[3] / ".gitignore").read_text("utf-8")
     assert "pipeline/data/cache/*" in gitignore.splitlines()
+
+
+# --- search -------------------------------------------------------------------------------------
+
+
+def test_search_movie_params_slim_results_and_cache(tmp_path):
+    body = {
+        "results": [
+            {
+                "id": 426,
+                "title": "Sueurs froides",
+                "original_title": "Vertigo",
+                "release_date": "1958-05-09",
+                "overview": "dropped",
+                "popularity": 12.3,
+            }
+        ]
+    }
+    client, session = make_client(tmp_path, FakeResponse(200, body))
+    expected = [
+        {
+            "id": 426,
+            "title": "Sueurs froides",
+            "original_title": "Vertigo",
+            "release_date": "1958-05-09",
+        }
+    ]
+    assert client.search_movie("Vertigo", year=1958) == expected
+    (call,) = session.calls
+    assert call["url"].endswith("/search/movie")
+    assert call["params"] == {
+        "query": "Vertigo",
+        "language": "fr-FR",
+        "include_adult": "false",
+        "year": 1958,
+    }
+    assert client.search_movie("Vertigo", year=1958) == expected  # from cache, no HTTP
+    assert len(session.calls) == 1
+
+
+def test_search_cache_keys_differ_by_year_and_are_file_safe(tmp_path):
+    client, session = make_client(
+        tmp_path, FakeResponse(200, {"results": []}), FakeResponse(200, {"results": []})
+    )
+    client.search_movie("Oslo, 31 août / ?*")
+    client.search_movie("Oslo, 31 août / ?*", year=2011)
+    assert len(session.calls) == 2
+    names = [f.name for f in (tmp_path / "search").iterdir()]
+    assert len(names) == 2 and all(n.replace("_", "").replace(".", "").isalnum() for n in names)
+
+
+def test_person_search_and_directing_credits(tmp_path):
+    people = {"results": [{"id": 7, "name": "Joseph Losey", "known_for_department": "Directing"}]}
+    credits = {
+        "crew": [
+            {"id": 94655, "title": "Eva", "original_title": "Eva", "job": "Director"},
+            {"id": 5, "title": "Autre", "job": "Writer"},
+        ]
+    }
+    client, session = make_client(tmp_path, FakeResponse(200, people), FakeResponse(200, credits))
+    assert client.search_person("Joseph Losey") == people["results"]
+    assert client.person_directing(7) == [
+        {"id": 94655, "title": "Eva", "original_title": "Eva", "release_date": None}
+    ]
+    assert session.calls[1]["url"].endswith("/person/7/movie_credits")
+    assert session.calls[1]["params"] == {"language": "fr-FR"}
