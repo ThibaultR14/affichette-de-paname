@@ -1,0 +1,39 @@
+/* Self-hosted fonts (OFL): no request to Google. Per-weight files declare their subsets with a
+   unicode-range, so the browser only downloads what a page uses. */
+@import '@fontsource/courier-prime/400.css';
+@import '@fontsource/courier-prime/700.css';
+@import '@fontsource/caveat/500.css';
+@import '@fontsource/caveat/700.css';
+
+/* Design tokens: docs/design.md. One accent only: the blue pen. Never orange.
+   Light theme here, dark theme below (contrast checked by contrast.test.ts). */
+:root {
+  --color-paper: #fbfaf7;
+  --color-surface: #ffffff;
+  --color-ink: #1b1b1b;
+  --color-muted: #555049;
+  --color-rule: #b9b4aa;
+  --color-pen: #2546b8;
+  --tape: rgba(214, 208, 196, 0.75);
+  --shadow-photo: 0 1px 2px rgba(0, 0, 0, 0.12);
+
+  --font-mono: 'Courier Prime', 'Courier New', monospace;
+  --font-hand: 'Caveat', cursive;
+
+  color-scheme: light;
+}
+
+/* Dark theme: <html data-theme="dark">, set by index.html before the first paint. Cards stay one
+   step lighter than the background; the invisible shadow becomes a 1 px rule. */
+:root[data-theme='dark'] {
+  --color-paper: #16171b;
+  --color-surface: #23242a;
+  --color-ink: #ece8df;
+  --color-muted: #ada79c;
+  --color-rule: #5a574f;
+  --color-pen: #8ea6ff;
+  --tape: rgba(214, 208, 196, 0.35);
+  --shadow-photo: 0 0 0 1px #5a574f;
+
+  color-scheme: dark;
+}

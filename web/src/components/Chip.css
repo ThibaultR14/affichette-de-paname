@@ -1,0 +1,29 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 2px solid var(--color-ink);
+  border-radius: 3px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.chip--active-filter {
+  border-style: dashed;
+  background: transparent;
+}
+
+.chip--active-filter:hover {
+  color: var(--color-pen);
+  border-color: var(--color-pen);
+}

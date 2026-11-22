@@ -1,5 +1,16 @@
 # Journal des décisions
 
+## 2026-11-22 - Design system : thème du système, CSS sans Tailwind
+- Contexte : issue #2, TODO de `docs/design.md`.
+- Décision :
+  - thème par défaut = préférence du système, clair à défaut, avec une bascule mémorisée (`affichette-theme`) ;
+  - pastilles sans couleur (bordure encre), `ugc` à côté du nom de la salle ;
+  - carte film en ligne compacte sous 640 px, carte photo au-delà ;
+  - CSS classique : jetons en propriétés CSS (`web/src/styles/tokens.css`) et un `.css` par composant ;
+  - polices auto-hébergées via `@fontsource`, vérifiées par `fonts.test.ts` ; contraste AA vérifié par `contrast.test.ts` ;
+  - `/styleguide` servi aussi en production, chargé à la demande, sans routeur pour l'instant.
+- Alternatives écartées : clair forcé (éblouit le soir) ; sombre par défaut comme Recsys (usage en extérieur) ; Tailwind comme Recsys (une dépendance et une config de plus pour une dizaine de composants) ; carte photo sur mobile (trop haute).
+
 ## 2026-11-22 - Lint front : oxlint plutôt qu'ESLint
 - Contexte : le template Vite actuel (Vite 8) génère une config oxlint et non plus ESLint.
 - Décision : garder oxlint, avec les plugins react, typescript et oxc, plus Prettier pour le format. `npm run lint` lance les deux, et `npm run typecheck` lance `tsc -b`.

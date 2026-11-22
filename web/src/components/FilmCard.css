@@ -1,0 +1,180 @@
+/* Mobile first: compact row (80 px thumbnail, title and meta beside it, showtimes below).
+   From 640 px: the taped photo of Recsys (full-width 2:3 poster, slight rotation). */
+
+.film-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.film-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  align-items: start;
+  align-content: start;
+  gap: 12px 16px;
+  padding: 12px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-photo);
+  color: var(--color-ink);
+}
+
+.film-card__poster {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  background: var(--color-rule);
+}
+
+.film-card__poster img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.film-card__poster--none {
+  background: transparent;
+  border: 2px dashed var(--color-muted);
+}
+
+.tape {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 56px;
+  height: 20px;
+  margin-left: -28px;
+  background: var(--tape);
+  transform: rotate(-3deg);
+}
+
+.film-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding-right: 36px; /* room for the favourite label */
+}
+
+.film-card__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.film-card__meta {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 14px;
+}
+
+.film-card__missing {
+  margin: 4px 0 0;
+  font-size: 20px;
+  line-height: 1.1;
+  transform: rotate(-2deg);
+  transform-origin: left;
+}
+
+.film-card__favorite {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-pen);
+  font-family: var(--font-hand);
+  font-size: 22px;
+  font-weight: 700;
+  transform: rotate(-12deg);
+  cursor: pointer;
+}
+
+.film-card__cinemas {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.film-card__cinema {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-muted);
+}
+
+.film-card__times {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.showtime {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.showtime__hours {
+  font-size: 17px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.showtime:hover {
+  color: var(--color-pen);
+}
+
+@media (min-width: 640px) {
+  .film-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 56px 36px;
+  }
+
+  .film-card {
+    grid-template-columns: 1fr;
+    padding: 12px 12px 18px;
+    transform: rotate(var(--tilt, 0deg));
+  }
+
+  .tape {
+    width: 72px;
+    height: 22px;
+    margin-left: -36px;
+  }
+
+  .film-card__header {
+    padding-right: 0;
+  }
+
+  .film-card__favorite {
+    top: -14px;
+    right: -14px;
+    font-size: 26px;
+  }
+}
