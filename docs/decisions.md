@@ -1,5 +1,15 @@
 # Journal des décisions
 
+## 2026-11-23 - Filtres : côté client, patrimoine écrit seulement quand il est coupé
+- Contexte : issue #10, filtres salles / carte UGC / patrimoine, combinables et partageables par l'URL.
+- Décision :
+  - le filtrage se fait dans le navigateur, sur les cartes du jour déjà chargées : changer un filtre ne relance pas de requête (une journée tient sous les 1 000 lignes) ;
+  - `?salles=champo,louxor&ugc=1&patrimoine=0` : seules les valeurs qui diffèrent du défaut sont écrites. Patrimoine étant actif par défaut, il n'apparaît que sous la forme `patrimoine=0` ;
+  - écriture par `replaceState`, comme le jour ;
+  - « tout effacer » coupe aussi patrimoine : on voit toute la programmation du jour ;
+  - les ids de salle inconnus d'un lien partagé sont ignorés et retirés de l'URL une fois la liste des salles chargée.
+- Alternatives écartées : filtrer dans la requête PostgREST (une requête par clic, et le filtre patrimoine doit garder les séances sans année) ; « tout effacer » qui remet les défauts (le bouton ne ferait rien sur une URL nue).
+
 ## 2026-11-23 - Jour dans l'URL : `replaceState`, date toujours écrite
 - Contexte : issue #9, bandeau 7 jours et `?jour=` partageable.
 - Décision :

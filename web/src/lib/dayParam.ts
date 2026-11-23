@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { parisDate, parisDayRange, resolveDay, weekStarting } from './days'
+import { replaceSearch } from './url'
 
 const PARAM = 'jour'
 
@@ -15,12 +16,6 @@ export function withDayParam(search: string, day: string | null): string {
   else params.set(PARAM, day)
   const query = params.toString()
   return query ? `?${query}` : ''
-}
-
-function replaceSearch(search: string) {
-  const { pathname, hash } = window.location
-  // replaceState: clicking through the days must not fill the back button.
-  window.history.replaceState(window.history.state, '', `${pathname}${search}${hash}`)
 }
 
 /** Small delay past midnight, so the timer never fires on the old day. */

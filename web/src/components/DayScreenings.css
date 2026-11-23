@@ -21,3 +21,7 @@
   font-size: 22px;
   transform: rotate(-1.5deg);
 }
+
+.day-screenings__empty .link-button {
+  margin-top: 8px;
+}

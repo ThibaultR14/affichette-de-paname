@@ -1,5 +1,6 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
+import { DEFAULT_FILTERS, NO_FILTERS } from '../lib/filters'
 import type { DayFilm } from '../lib/screenings'
 import { DayScreenings } from './DayScreenings'
 
@@ -103,5 +104,79 @@ describe('DayScreenings', () => {
     await Promise.resolve()
     expect(screen.getByRole('heading', { name: '1 film jeudi 26' })).toBeInTheDocument()
     expect(load).toHaveBeenCalledTimes(2)
+  })
+
+  describe('with filters', () => {
+    const recent: DayFilm = { ...mepris, key: 'tmdb:1', tmdbId: 1, title: 'Anatomie', year: 2023 }
+
+    it('applies them to the loaded day, without reloading', async () => {
+      const load = vi.fn(() => Promise.resolve([mepris, recent, unmatched]))
+      const { rerender } = render(
+        <DayScreenings day={today} today={today} filters={NO_FILTERS} load={load} />,
+      )
+      expect(
+        await screen.findByRole('heading', { name: '3 films aujourd’hui' }),
+      ).toBeInTheDocument()
+      rerender(<DayScreenings day={today} today={today} filters={DEFAULT_FILTERS} load={load} />)
+      expect(screen.getByRole('heading', { name: '2 films aujourd’hui' })).toBeInTheDocument()
+      expect(screen.queryByRole('heading', { name: 'Anatomie' })).not.toBeInTheDocument()
+      rerender(
+        <DayScreenings
+          day={today}
+          today={today}
+          filters={{ ...NO_FILTERS, cinemas: ['louxor'] }}
+          load={load}
+        />,
+      )
+      expect(screen.getByRole('heading', { name: '1 film aujourd’hui' })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'Nuit des courts' })).toBeInTheDocument()
+      expect(load).toHaveBeenCalledTimes(1)
+    })
+
+    it('suggests dropping heritage when the filters leave nothing', async () => {
+      const onClear = vi.fn()
+      render(
+        <DayScreenings
+          day={today}
+          today={today}
+          filters={DEFAULT_FILTERS}
+          onClearFilters={onClear}
+          load={() => Promise.resolve([recent])}
+        />,
+      )
+      expect(
+        await screen.findByText('rien ce jour-là avec ces filtres. essaie sans « patrimoine » ?'),
+      ).toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button', { name: 'tout effacer' }))
+      expect(onClear).toHaveBeenCalledOnce()
+    })
+
+    it('does not mention heritage when it is off', async () => {
+      render(
+        <DayScreenings
+          day={today}
+          today={today}
+          filters={{ ...NO_FILTERS, ugc: true }}
+          load={() =>
+            Promise.resolve([{ ...mepris, cinemas: [{ ...mepris.cinemas[0], acceptsUgc: false }] }])
+          }
+        />,
+      )
+      expect(await screen.findByText('rien ce jour-là avec ces filtres.')).toBeInTheDocument()
+    })
+
+    it('keeps the « nothing on » message for an empty day', async () => {
+      render(
+        <DayScreenings
+          day={today}
+          today={today}
+          filters={DEFAULT_FILTERS}
+          load={() => Promise.resolve([])}
+        />,
+      )
+      expect(
+        await screen.findByText('rien de programmé aujourd’hui pour l’instant.'),
+      ).toBeInTheDocument()
+    })
   })
 })
