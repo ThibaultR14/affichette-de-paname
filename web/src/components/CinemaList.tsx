@@ -1,19 +1,31 @@
 import { useEffect, useState } from 'react'
-import { fetchCinemas, type Cinema } from '../lib/cinemas'
+import { fetchCinemas, type CinemaWithCoverage } from '../lib/cinemas'
+import { parisDate } from '../lib/days'
 import { Badge } from './Badge'
+import { CoverageLine } from './CoverageLine'
 import './CinemaList.css'
 
-type State = { status: 'loading' } | { status: 'error' } | { status: 'ok'; cinemas: Cinema[] }
+type State =
+  { status: 'loading' } | { status: 'error' } | { status: 'ok'; cinemas: CinemaWithCoverage[] }
 
 function arrondissementLabel(n: number) {
   return n === 1 ? '1er' : `${n}e`
 }
 
-/** The cinemas covered by the site, read from Supabase. */
-export function CinemaList({ load = fetchCinemas }: { load?: () => Promise<Cinema[]> }) {
+/** The cinemas covered by the site, read from Supabase, each with its coverage. */
+export function CinemaList({
+  load = fetchCinemas,
+  now,
+}: {
+  load?: () => Promise<CinemaWithCoverage[]>
+  /** Fixed clock for tests; the current time otherwise. */
+  now?: Date
+}) {
   const [state, setState] = useState<State>({ status: 'loading' })
   // Load once, even if a parent passes a new function on each render.
   const [loadOnce] = useState(() => load)
+  // « il y a … » is computed once per visit, not refreshed live (out of scope for #12).
+  const [clock] = useState(() => now ?? new Date())
 
   useEffect(() => {
     let active = true
@@ -38,6 +50,7 @@ export function CinemaList({ load = fetchCinemas }: { load?: () => Promise<Cinem
   if (state.cinemas.length === 0) {
     return <p className="hand cinema-list__error">(pas encore de salle ici, reviens bientôt)</p>
   }
+  const today = parisDate(clock)
   return (
     <section className="cinema-list" aria-labelledby="cinema-list-title">
       <h2 id="cinema-list-title">les {state.cinemas.length} salles</h2>
@@ -49,6 +62,7 @@ export function CinemaList({ load = fetchCinemas }: { load?: () => Promise<Cinem
             {cinema.arrondissement !== null && (
               <span className="cinema-list__arr">{arrondissementLabel(cinema.arrondissement)}</span>
             )}
+            <CoverageLine coverage={cinema} today={today} now={clock} />
           </li>
         ))}
       </ul>

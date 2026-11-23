@@ -1,5 +1,14 @@
 # Journal des décisions
 
+## 2026-11-23 - Couverture : `last_success_at` à côté de `last_import_at`
+- Contexte : issue #12. `mark_failed` écrit `last_import_at`, donc une salle en échec depuis 3 jours aurait affiché « mis à jour il y a 2 h ».
+- Décision :
+  - nouvelle colonne `cinemas.last_success_at`, écrite seulement par un import réussi. « mis à jour il y a … » la lit ; `last_import_at` reste la dernière tentative (utile pour le rapport #13) ;
+  - la couverture s'affiche dans la liste des salles de l'accueil, pas sur les cartes film ni la fiche ;
+  - date « ven. 27 » à 6 jours d'aujourd'hui au plus, sinon « 16 nov. » (un jour de semaine seul serait ambigu) ;
+  - « il y a … » calculé une fois à l'ouverture de la page, sans minuteur.
+- Alternatives écartées : `mark_failed` qui n'écrit plus `last_import_at` (pas de migration, mais on perd la date de la dernière tentative) ; lire `import_runs` depuis le front (table privée).
+
 ## 2026-11-23 - Routeur maison, fiche film sans filtres (#11)
 - Contexte : la fiche `/film/:tmdbId` est la première vraie route. Le site en aura quatre (`/`, `/film/:id`, `/favoris`, `/connexion`).
 - Décision :

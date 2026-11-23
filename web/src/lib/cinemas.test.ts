@@ -10,13 +10,33 @@ function fakeClient(result: { data: unknown; error: { message: string } | null }
 
 describe('fetchCinemas', () => {
   it('reads the cinemas sorted by name', async () => {
-    const rows = [{ id: 'champo', name: 'Le Champo', arrondissement: 5, accepts_ugc: true }]
+    const rows = [
+      {
+        id: 'champo',
+        name: 'Le Champo',
+        arrondissement: 5,
+        accepts_ugc: true,
+        coverage_until: '2026-11-28',
+        last_success_at: '2026-11-23T04:00:00+00:00',
+        last_import_ok: true,
+      },
+    ]
     const { client, from, select, order } = fakeClient({ data: rows, error: null })
     await expect(fetchCinemas(client)).resolves.toEqual([
-      { id: 'champo', name: 'Le Champo', arrondissement: 5, acceptsUgc: true },
+      {
+        id: 'champo',
+        name: 'Le Champo',
+        arrondissement: 5,
+        acceptsUgc: true,
+        coverageUntil: '2026-11-28',
+        lastSuccessAt: '2026-11-23T04:00:00+00:00',
+        lastImportOk: true,
+      },
     ])
     expect(from).toHaveBeenCalledWith('cinemas')
-    expect(select).toHaveBeenCalledWith('id, name, arrondissement, accepts_ugc')
+    expect(select).toHaveBeenCalledWith(
+      'id, name, arrondissement, accepts_ugc, coverage_until, last_success_at, last_import_ok',
+    )
     expect(order).toHaveBeenCalledWith('name')
   })
 
