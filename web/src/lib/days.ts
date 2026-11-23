@@ -49,13 +49,26 @@ export function dayLabel(day: string, today: string): string {
   return `${weekdayShort.format(date)} ${d}`
 }
 
-/** The 7 Paris calendar days of the rolling window, today first. */
-export function rollingWeek(now: Date): string[] {
-  const [y, m, d] = parisDate(now).split('-').map(Number)
+/** The 7 calendar days starting on `first` (YYYY-MM-DD). */
+export function weekStarting(first: string): string[] {
+  const [y, m, d] = first.split('-').map(Number)
   return Array.from({ length: 7 }, (_, i) => {
     const day = new Date(Date.UTC(y, m - 1, d + i))
     return day.toISOString().slice(0, 10)
   })
+}
+
+/** The 7 Paris calendar days of the rolling window, today first. */
+export function rollingWeek(now: Date): string[] {
+  return weekStarting(parisDate(now))
+}
+
+/**
+ * Day to show for a `?jour=` value: itself if it is one of `week`, otherwise today (`week[0]`).
+ * Membership also rejects malformed values.
+ */
+export function resolveDay(param: string | null, week: string[]): string {
+  return param !== null && week.includes(param) ? param : week[0]
 }
 
 const wallClock = new Intl.DateTimeFormat('en-US', {

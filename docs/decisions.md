@@ -1,5 +1,14 @@
 # Journal des décisions
 
+## 2026-11-23 - Jour dans l'URL : `replaceState`, date toujours écrite
+- Contexte : issue #9, bandeau 7 jours et `?jour=` partageable.
+- Décision :
+  - un clic sur un jour remplace l'entrée d'historique (`replaceState`) au lieu d'en ajouter une : « retour » quitte la page au lieu de rejouer les jours cliqués ;
+  - un clic écrit la date, même sur « auj. » : un lien partagé après un choix désigne un jour précis. À l'arrivée sur `/`, l'URL reste sans `jour` (on ne réécrit pas l'adresse d'une simple visite) : ce lien-là veut dire « aujourd'hui, quel que soit le jour où on l'ouvre » ;
+  - un `?jour=` absent, mal formé, passé ou au-delà des 7 jours donne aujourd'hui, et il est retiré de l'URL pour qu'elle dise ce qu'on voit ;
+  - `today` est recalculé à minuit Paris et au retour sur l'onglet, sinon une page laissée ouverte la nuit chercherait un jour passé.
+- Alternatives écartées : `pushState` (sept entrées d'historique pour parcourir la semaine) ; omettre `jour` quand on clique sur « auj. » (un lien envoyé le soir montrerait un autre jour le lendemain) ; écrire `jour` dès l'arrivée (l'adresse change sans action de l'utilisateur) ; un routeur dès maintenant (il arrive avec la fiche film, #11).
+
 ## 2026-11-23 - Vue du jour : séances commencées masquées, regroupement côté client
 - Contexte : issue #8, accueil par film pour un jour donné.
 - Décision :
