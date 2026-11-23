@@ -1,5 +1,15 @@
 # Journal des décisions
 
+## 2026-11-23 - Magic link : flux implicite, retour sur /connexion (#15)
+- Contexte : première connexion au site. Le lien arrive par mail, souvent ouvert sur mobile depuis l'appli mail, donc dans un autre navigateur que celui de la demande.
+- Décision :
+  - flux implicite de supabase-js (son défaut) : la session arrive dans le hash du lien et marche dans n'importe quel navigateur ;
+  - `emailRedirectTo` = `<origin>/connexion` : la page affiche « c'est bon, on t'a reconnu » ou l'erreur du lien (`#error_code=otp_expired` pour un lien expiré ou déjà servi), puis nettoie l'URL ;
+  - session gardée par supabase-js dans le `localStorage` (rafraîchie seule) ; « se déconnecter » ne déconnecte que ce navigateur (`scope: 'local'`) ;
+  - pas de contexte React : un hook `useSession()` abonné à `onAuthStateChange` ;
+  - gabarits de mail en français dans `supabase/templates/` (magic link et confirmation, le projet cloud envoie la confirmation au premier login). Le projet cloud les reçoit à la main par le dashboard, pas par `supabase config push`, qui écraserait aussi `site_url`.
+- Alternatives écartées : PKCE (plus sûr contre l'interception du lien, mais échoue si le lien s'ouvre dans un autre navigateur) ; code OTP à 6 chiffres (plus pénible à taper, gardé pour plus tard si les liens posent problème) ; retour sur l'accueil (pas de place pour l'erreur d'un lien expiré).
+
 ## 2026-11-23 - Couverture : `last_success_at` à côté de `last_import_at`
 - Contexte : issue #12. `mark_failed` écrit `last_import_at`, donc une salle en échec depuis 3 jours aurait affiché « mis à jour il y a 2 h ».
 - Décision :

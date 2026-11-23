@@ -24,7 +24,7 @@
 
 - Un seul accent : le stylo bleu.
 - Contraste AA vérifié par un test (`contrast.test.ts`, repris de Recsys), dans les deux thèmes.
-- **Thème par défaut** : celui du système (`prefers-color-scheme`), clair si le système ne dit rien. La bascule « passer en sombre » / « passer en clair » est mémorisée dans le navigateur (clé `affichette-theme`, seule donnée stockée). Un script dans `index.html` applique le thème avant le premier rendu. Jetons dans `web/src/styles/tokens.css`.
+- **Thème par défaut** : celui du système (`prefers-color-scheme`), clair si le système ne dit rien. La bascule « passer en sombre » / « passer en clair » est mémorisée dans le navigateur (clé `affichette-theme` ; la seule autre donnée stockée est la session Supabase, quand on est connecté). Un script dans `index.html` applique le thème avant le premier rendu. Jetons dans `web/src/styles/tokens.css`.
 - **Pastilles de séance** (`vo`, `vf`, `35mm`, `70mm`, `4k`, `ugc`) : minuscules, 13 px gras, bordure 1,5 px encre, coins 3 px, sans fond ni couleur. `ugc` se met à côté du nom de la salle, les autres à côté de l'heure. Les pointillés restent réservés aux filtres actifs.
 
 ## Typographie
@@ -82,6 +82,6 @@ Aucune requête vers Google Fonts.
   - jour vide après filtres : « rien ce jour-là avec ces filtres. essaie sans « patrimoine » ? »
   - favoris vides : « t'attends quel film ? cherche-le, on te prévient quand il passe. »
   - email d'alerte : objet « « le mépris » passe cette semaine », puis le corps « au champo, jeudi 20:30 (vo, 35mm). »
-  - connexion : « on t'envoie un lien par mail, pas de mot de passe. »
+  - connexion : « on t'envoie un lien par mail, pas de mot de passe. », puis « c'est parti. regarde tes mails (et les spams) », et une fois connecté « c'est bon, on t'a reconnu : <email>. »
 - Mentions obligatoires (ne pas reformuler) : « This product uses the TMDB API but is not endorsed or certified by TMDB. », plus le logo TMDB sur la page « à propos ».
 - Pied de page : TODO. Il précisera que le site est indépendant, sans lien avec les salles ni avec le compte Instagram @movieinparis.

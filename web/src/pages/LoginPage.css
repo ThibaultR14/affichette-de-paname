@@ -1,0 +1,56 @@
+.login {
+  max-width: 65ch;
+}
+
+.login p {
+  margin-top: 16px;
+}
+
+.login__muted {
+  color: var(--color-muted);
+}
+
+.login__email {
+  overflow-wrap: anywhere;
+}
+
+.login__form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 420px;
+  margin-top: 24px;
+}
+
+.login__input {
+  min-height: 48px;
+  padding: 0 12px;
+  border: 2px solid var(--color-ink);
+  border-radius: 3px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 16px; /* 16 px or more: iOS does not zoom on focus */
+}
+
+.login__input:focus-visible {
+  outline: 2px solid var(--color-pen);
+  outline-offset: 2px;
+}
+
+.login__form .button {
+  margin-top: 8px;
+}
+
+.login__error {
+  font-size: 22px;
+  transform: rotate(-2deg);
+  transform-origin: left;
+}
+
+.login__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+}
