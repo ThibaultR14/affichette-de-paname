@@ -1,0 +1,18 @@
+.coverage {
+  flex-basis: 100%;
+}
+
+.coverage p {
+  margin: 0;
+}
+
+.coverage__line {
+  color: var(--color-muted);
+  font-size: 14px;
+}
+
+.coverage__failed {
+  font-size: 20px;
+  line-height: 1.2;
+  transform: rotate(-1.5deg);
+}

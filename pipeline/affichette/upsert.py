@@ -89,7 +89,11 @@ def sync_cinema(
     db.upsert("screenings", list(rows.values()), on_conflict="source_key")
 
     coverage = max((paris_date(raw.starts_at) for raw, _ in screenings), default=None)
-    state: dict[str, Any] = {"last_import_at": _ts(now), "last_import_ok": True}
+    state: dict[str, Any] = {
+        "last_import_at": _ts(now),
+        "last_success_at": _ts(now),
+        "last_import_ok": True,
+    }
     if coverage is not None:  # nothing scheduled: keep the last known coverage
         state["coverage_until"] = coverage.isoformat()
     try:
@@ -108,7 +112,8 @@ def sync_cinema(
 
 
 def mark_failed(db: Any, cinema_id: str, now: datetime) -> None:
-    """Failed import: only `cinemas` records it, screenings and coverage are kept."""
+    """Failed import: only `cinemas` records it. Screenings, coverage and `last_success_at`
+    are kept, so the site still dates the programme from the last successful import."""
     db.update(
         "cinemas", {"last_import_at": _ts(now), "last_import_ok": False}, {"id": f"eq.{cinema_id}"}
     )
