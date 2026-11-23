@@ -1,0 +1,23 @@
+.day-screenings h2 {
+  margin: 24px 0 32px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.day-screenings__note {
+  color: var(--color-muted);
+}
+
+.day-screenings__empty p {
+  margin: 24px 0 0;
+}
+
+.day-screenings__empty .day-screenings__hint {
+  margin-top: 8px;
+}
+
+.day-screenings__error,
+.day-screenings__hint {
+  font-size: 22px;
+  transform: rotate(-1.5deg);
+}

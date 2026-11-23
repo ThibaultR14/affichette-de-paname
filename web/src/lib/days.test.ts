@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { dayLabel, formatRuntime, parisDate, parisTime, rollingWeek } from './days'
+import {
+  dayLabel,
+  dayTitle,
+  formatRuntime,
+  parisDate,
+  parisDayRange,
+  parisTime,
+  rollingWeek,
+} from './days'
 
 describe('parisTime', () => {
   it('formats in Paris time, winter and summer', () => {
@@ -62,5 +70,42 @@ describe('rollingWeek', () => {
     const week = rollingWeek(new Date('2026-10-24T12:00:00Z'))
     expect(week[0]).toBe('2026-10-24')
     expect(week[6]).toBe('2026-10-30')
+  })
+})
+
+describe('parisDayRange', () => {
+  it('maps a Paris day to UTC instants, winter and summer', () => {
+    expect(parisDayRange('2026-11-24')).toEqual({
+      from: '2026-11-23T23:00:00.000Z',
+      to: '2026-11-24T23:00:00.000Z',
+    })
+    expect(parisDayRange('2026-07-01')).toEqual({
+      from: '2026-06-30T22:00:00.000Z',
+      to: '2026-07-01T22:00:00.000Z',
+    })
+  })
+
+  it('handles the 23-hour and 25-hour days', () => {
+    // 2026-03-29: clocks go forward; 2026-10-25: clocks go back
+    expect(parisDayRange('2026-03-29')).toEqual({
+      from: '2026-03-28T23:00:00.000Z',
+      to: '2026-03-29T22:00:00.000Z',
+    })
+    expect(parisDayRange('2026-10-25')).toEqual({
+      from: '2026-10-24T22:00:00.000Z',
+      to: '2026-10-25T23:00:00.000Z',
+    })
+  })
+
+  it('crosses a month and a year', () => {
+    expect(parisDayRange('2026-12-31').to).toBe('2026-12-31T23:00:00.000Z')
+  })
+})
+
+describe('dayTitle', () => {
+  it('spells the day out', () => {
+    expect(dayTitle('2026-11-22', '2026-11-22')).toBe('aujourd’hui')
+    expect(dayTitle('2026-11-23', '2026-11-22')).toBe('demain')
+    expect(dayTitle('2026-11-25', '2026-11-22')).toBe('mercredi 25')
   })
 })

@@ -10,8 +10,8 @@ export interface Showtime {
   startsAt: string
   version?: string | null
   format?: string | null
-  /** Booking page, or the cinema's programme page when there is none. */
-  bookingUrl: string
+  /** Booking page, or the cinema's programme page; null when neither is known (plain text). */
+  bookingUrl: string | null
 }
 
 export interface CinemaShowtimes {
@@ -112,21 +112,30 @@ export function FilmCard({
             <ul className="film-card__times">
               {cinema.showtimes.map((s) => {
                 const end = endTime(s.startsAt, runtimeMin)
+                const content = (
+                  <>
+                    <span className="showtime__hours">
+                      <time dateTime={s.startsAt}>{parisTime(new Date(s.startsAt))}</time>
+                      {end && <> → {end}</>}
+                    </span>
+                    {s.version && <Badge>{s.version}</Badge>}
+                    {s.format && <Badge>{s.format}</Badge>}
+                  </>
+                )
                 return (
                   <li key={s.id}>
-                    <a
-                      className="showtime"
-                      href={s.bookingUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <span className="showtime__hours">
-                        <time dateTime={s.startsAt}>{parisTime(new Date(s.startsAt))}</time>
-                        {end && <> → {end}</>}
-                      </span>
-                      {s.version && <Badge>{s.version}</Badge>}
-                      {s.format && <Badge>{s.format}</Badge>}
-                    </a>
+                    {s.bookingUrl ? (
+                      <a
+                        className="showtime"
+                        href={s.bookingUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {content}
+                      </a>
+                    ) : (
+                      <span className="showtime showtime--nolink">{content}</span>
+                    )}
                   </li>
                 )
               })}

@@ -57,3 +57,58 @@ export function rollingWeek(now: Date): string[] {
     return day.toISOString().slice(0, 10)
   })
 }
+
+const wallClock = new Intl.DateTimeFormat('en-US', {
+  timeZone: PARIS_TZ,
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+  second: 'numeric',
+  hourCycle: 'h23',
+})
+
+/** Offset of Paris from UTC at `instant`, in milliseconds (+1 h in winter, +2 h in summer). */
+function parisOffset(instant: number): number {
+  const parts = Object.fromEntries(
+    wallClock.formatToParts(instant).map((p) => [p.type, Number(p.value)]),
+  )
+  const asUtc = Date.UTC(
+    parts.year,
+    parts.month - 1,
+    parts.day,
+    parts.hour,
+    parts.minute,
+    parts.second,
+  )
+  return asUtc - Math.floor(instant / 1000) * 1000
+}
+
+/** UTC instant of 00:00 in Paris on `day` (YYYY-MM-DD). */
+function parisMidnight(y: number, m: number, d: number): number {
+  const wall = Date.UTC(y, m - 1, d)
+  // Two passes: the offset at the guess may differ from the one at midnight around DST changes.
+  const guess = wall - parisOffset(wall)
+  return wall - parisOffset(guess)
+}
+
+/** `[from, to[` of a Paris calendar day as UTC ISO instants (23 h or 25 h on DST days). */
+export function parisDayRange(day: string): { from: string; to: string } {
+  const [y, m, d] = day.split('-').map(Number)
+  return {
+    from: new Date(parisMidnight(y, m, d)).toISOString(),
+    to: new Date(parisMidnight(y, m, d + 1)).toISOString(),
+  }
+}
+
+const weekdayLong = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', timeZone: 'UTC' })
+
+/** Day in a sentence: « aujourd'hui », « demain », then « mercredi 25 ». */
+export function dayTitle(day: string, today: string): string {
+  const short = dayLabel(day, today)
+  if (short === 'auj.') return 'aujourd’hui'
+  if (short === 'dem.') return 'demain'
+  const [y, m, d] = day.split('-').map(Number)
+  return `${weekdayLong.format(new Date(Date.UTC(y, m - 1, d)))} ${d}`
+}

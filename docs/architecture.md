@@ -63,7 +63,8 @@
 - `@supabase/supabase-js` pour les lectures, l'auth et les favoris.
 - État des filtres dans l'URL (`?jour=2026-11-24&salles=champo,louxor&ugc=1&patrimoine=0`), pour qu'on puisse partager un lien.
 - Affiches servies par le CDN TMDB (`image.tmdb.org`).
-- Client Supabase dans `src/lib/supabase.ts` (`null` si les variables `VITE_*` manquent, la page affiche alors une erreur au lieu de planter). Lectures dans `src/lib/<table>.ts` (`fetchCinemas`).
+- Client Supabase dans `src/lib/supabase.ts` (`null` si les variables `VITE_*` manquent, la page affiche alors une erreur au lieu de planter). Lectures dans `src/lib/<table>.ts` (`fetchCinemas`), `fetchDayScreenings`).
+- Vue du jour (`components/DayScreenings.tsx`) : `fetchDayScreenings(day)` lit en une requête `screenings` + `cinemas` + `films` (jointures PostgREST) sur `parisDayRange(day)` (`[00:00, 24:00[` Paris en UTC, jours de 23 h et 25 h compris), séances non annulées, à partir de maintenant pour aujourd'hui. Au-delà de 1 000 lignes (`max_rows`), erreur plutôt qu'un jour tronqué. `groupByFilm` fait une carte par `tmdb_id`, à défaut par titre brut (casse et espaces ignorés), salles par nom, séances par heure, cartes par titre. Lien d'une heure : `booking_url`, sinon `website_url` de la salle, sinon pas de lien. Affiches en `w342`.
 - Styles : jetons clair/sombre dans `src/styles/tokens.css` (`data-theme` sur `<html>`), un `.css` par composant dans `src/components/`. Page `/styleguide` (`src/pages/Styleguide.tsx`), choisie par `src/Root.tsx` en attendant le routeur.
 
 ## Déploiement du front

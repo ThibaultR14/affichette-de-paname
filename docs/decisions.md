@@ -1,5 +1,15 @@
 # Journal des décisions
 
+## 2026-11-23 - Vue du jour : séances commencées masquées, regroupement côté client
+- Contexte : issue #8, accueil par film pour un jour donné.
+- Décision :
+  - pour aujourd'hui, on ne montre que les séances qui n'ont pas commencé (le site sert surtout dans la rue) ;
+  - une requête PostgREST avec jointures, regroupée par film dans le navigateur ; les séances sans fiche TMDB sont regroupées par titre brut (casse et espaces ignorés), jamais fusionnées avec un film trouvé ;
+  - si la requête renvoie 1 000 lignes (`max_rows` de Supabase), on affiche une erreur plutôt qu'un jour tronqué sans le dire ;
+  - cartes triées par titre, inclinaison dérivée de la clé du film (stable d'un rendu à l'autre) ;
+  - sans `booking_url` ni `website_url`, l'heure s'affiche sans lien.
+- Alternatives écartées : garder toutes les séances du jour (il faut faire défiler les séances passées) ; une vue SQL ou une RPC par film (une migration de plus pour un regroupement de quelques centaines de lignes) ; trier par première séance (l'ordre change au fil de la journée, plus dur à parcourir).
+
 ## 2026-11-22 - Import SCARE : fenêtre de 7 jours, VF pour les films français, 0 ligne = panne
 - Contexte : issue #7, premier import de bout en bout (`sources/scare.py`, `upsert.py`, `main.py`).
 - Décision :

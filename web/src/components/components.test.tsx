@@ -125,6 +125,20 @@ describe('FilmCard', () => {
     expect(screen.getByText('1967')).toBeInTheDocument()
   })
 
+  it('shows the time as plain text when there is no link to give', () => {
+    const noLink: CinemaShowtimes[] = [
+      {
+        cinemaId: 'louxor',
+        cinemaName: 'Le Louxor',
+        acceptsUgc: true,
+        showtimes: [{ id: 'l-1', startsAt: '2026-11-26T13:00:00Z', bookingUrl: null }],
+      },
+    ]
+    render(<FilmCard tmdbId={1} title="x" cinemas={noLink} />)
+    expect(screen.queryByRole('link')).toBeNull()
+    expect(screen.getByText('14:00')).toBeInTheDocument()
+  })
+
   it('without a TMDB match: no poster, apology note', () => {
     const { container } = render(
       <FilmCard tmdbId={null} title="Nuit des courts" cinemas={cinemas} />,
