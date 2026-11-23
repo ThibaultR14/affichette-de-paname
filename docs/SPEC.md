@@ -140,6 +140,6 @@ RLS : `cinemas`, `films` et `screenings` sont lisibles par tous. `favorites` et 
 1. ~~**Source des séances**~~ : tranchée par le spike #1 (`docs/spikes/01-sources.md`). La source principale est le jeu SCARE de data.gouv.fr, puis une source par salle. L'API Webedia n'est utilisée qu'avec l'accord écrit des salles. Christine, Écoles et Archipel sont sans source pour l'instant. Taux de correspondance TMDB mesuré : environ 86 % des films.
 2. ~~**Liste UGC Illimité**~~ : vérifiée le 2026-11-22 (#3), seul le Club de l'Étoile ne l'accepte pas. À revérifier de temps en temps (`ugc_verified_at`).
 3. **Nom de domaine** : le nom est fixé (« L'Affichette de Paname »), le domaine reste à choisir. En attendant, le site est servi sur `*.pages.dev`.
-4. **Canal d'alerte admin** en cas d'échec d'import : issue GitHub automatique ou email Resend.
+4. ~~**Canal d'alerte admin**~~ : une issue GitHub par salle en échec, sans doublon (#13). Le job rouge déclenche aussi l'email de GitHub.
 5. ~~**Fuseau et heure du cron**~~ : `0 4 * * *` UTC chaque jour, plus `0 13 * * 3` UTC le mercredi (voir `docs/decisions.md`).
 6. **Quotas Resend** (100 emails/jour) : suffisants pour un projet perso. À surveiller si le site est partagé.
