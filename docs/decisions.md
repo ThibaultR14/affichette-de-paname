@@ -1,5 +1,19 @@
 # Journal des décisions
 
+## 2026-11-22 - Import SCARE : fenêtre de 7 jours, VF pour les films français, 0 ligne = panne
+- Contexte : issue #7, premier import de bout en bout (`sources/scare.py`, `upsert.py`, `main.py`).
+- Décision :
+  - on importe seulement `[aujourd'hui 00:00 Paris, +7 jours[`, comme la SPEC. Les annulations ne visent que la partie future de cette fenêtre, et `coverage_until` = date de la dernière séance importée (inchangée pour une salle sans séance cette semaine) ;
+  - `VERSION_ORIGINAL_LOCAL` (films français dans leur langue : *Huit femmes*, *Intouchables*) et `VERSION_LOCAL` → `VF`. `ST` dans `filmaudio` fait passer une VO en VOSTFR, mais pas une VF (`VF` + `ST,OCAP` = sous-titres pour sourds) ;
+  - un jeu SCARE sans aucune ligne parisienne est une panne : toutes les salles SCARE passent en échec et rien n'est annulé ;
+  - une salle dont le `cinenom` a disparu du jeu (renommée, retirée) est en échec, pour la même raison ;
+  - pas de transaction : upsert, annulations et état de la salle sont trois appels PostgREST. Un échec après l'upsert est signalé « écriture partielle » dans `import_runs.error`, et l'import suivant complète (étapes idempotentes). Une fonction SQL `rpc` transactionnelle reste possible si ce cas se produit vraiment ;
+  - pas de `showurl` → `booking_url = null`, le front retombe sur `website_url` de la salle ;
+  - un `tmdb_id` fourni par la source mais inconnu de TMDB (404) n'est pas écrit sur la séance (clé étrangère vers `films`) ;
+  - `--dry-run` lit la vraie base et n'écrit rien (`DryRunDb`), pour voir l'effet d'un import sans risque ;
+  - `import_runs` : une ligne par salle, écrite en fin de traitement de la salle.
+- Alternatives écartées : importer tout l'horizon SCARE (jusqu'en juin pour Saint-André : des centaines de recherches TMDB pour des séances que personne ne verra avant des semaines) ; `VERSION_ORIGINAL_LOCAL` en VO (exact mais trompeur à côté des films étrangers en VO) ; recopier `website_url` dans `booking_url` (donnée dupliquée qu'il faudrait corriger à deux endroits) ; un `--dry-run` sans base (il faudrait reconstruire salles et séances existantes, et le calcul des annulations ne serait plus le vrai).
+
 ## 2026-11-22 - Correspondance TMDB : seuils du spike, réalisateur tolérant, cache par salle
 - Contexte : issue #6, `matching.py`. Le seuil devait être réglé sur l'échantillon du spike (220 titres SCARE), avec un taux au moins égal à celui mesuré (149/220).
 - Décision :

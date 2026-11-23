@@ -54,7 +54,7 @@ Couverture V1 sans accord : **3 salles complètes, 3 partielles, puis 5 de plus 
   - pas d'année ;
   - Louxor, Sept Parnassiens et Épée de Bois n'y publient que leurs événements ;
   - les séances sans `showstart` existent (Luminor), donc à ignorer.
-- Clé de séance stable : `scare:<cinema_id>:<showid>` (à confirmer sur plusieurs jours dans #7).
+- Clé de séance : `scare:<cinema_id>:<showid>`. Dans #7 (22/11), `showid` est unique sur les 440 lignes, et les 440 séances d'un second téléchargement ont les mêmes `showid`, titres et horaires. Les deux appels datent du même jour : la stabilité d'un jour sur l'autre se verra aux premiers imports (une clé qui change donnerait une annulation plus une nouvelle séance au même horaire).
 - Autres salles parisiennes présentes, hors de notre liste : Le Balzac, L'Entrepôt, Studio des Ursulines, Chaplin Saint-Lambert, Cinq Caumartin, Cinéma du Panthéon, Élysées Lincoln, Luminor. À garder en tête si la liste s'élargit un jour.
 
 ### 1 bis. cine.boutique / Ciné Digital (Champo, Saint-André-des-Arts, Grand Action) : non retenu

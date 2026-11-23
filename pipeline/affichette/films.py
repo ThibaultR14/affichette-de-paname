@@ -18,9 +18,11 @@ from typing import Any
 from dotenv import load_dotenv
 
 from affichette.db import Db, DbError
-from affichette.tmdb import Tmdb, TmdbError, release_year
+from affichette.tmdb import CACHE_REUSE, Tmdb, TmdbError, release_year
 
 log = logging.getLogger(__name__)
+
+FILMS_CHUNK = 200  # ids per `in.(...)` select (URL length)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -55,6 +57,32 @@ def upsert_film(tmdb_id: int, tmdb: Tmdb, db: Db | None) -> dict[str, Any] | Non
     if db is not None:
         db.upsert("films", [row], on_conflict="tmdb_id")
     return row
+
+
+def ensure_films(tmdb_ids: set[int], tmdb: Tmdb, db: Any, now: datetime) -> set[int]:
+    """Make sure every id has a fresh `films` row; return the ids that exist in `films`.
+
+    Absent or older than 30 days -> fetched (TMDB cache) and upserted. An id TMDB does not know
+    (404) and that is not in `films` is left out: a screening cannot point to it (foreign key).
+    """
+    if not tmdb_ids:
+        return set()
+    known: dict[int, datetime] = {}
+    ids = sorted(tmdb_ids)
+    for i in range(0, len(ids), FILMS_CHUNK):
+        chunk = ",".join(str(x) for x in ids[i : i + FILMS_CHUNK])
+        for row in db.select(
+            "films", {"select": "tmdb_id,tmdb_fetched_at", "tmdb_id": f"in.({chunk})"}
+        ):
+            known[row["tmdb_id"]] = datetime.fromisoformat(row["tmdb_fetched_at"])
+    valid = set()
+    for tmdb_id in ids:
+        fetched_at = known.get(tmdb_id)
+        if fetched_at is not None and now - fetched_at < CACHE_REUSE:
+            valid.add(tmdb_id)
+        elif upsert_film(tmdb_id, tmdb, db) is not None or fetched_at is not None:
+            valid.add(tmdb_id)
+    return valid
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from datetime import UTC, date, datetime, time, timedelta
+from zoneinfo import ZoneInfo
 
 _VERSION_PATTERNS = (
     ("VOSTFR", re.compile(r"\bvo\s*st\s*fr?\b|\bvost\b|\bvostf\b")),
@@ -55,3 +57,26 @@ def normalize_title(title: str | None) -> str:
     text = text.replace("œ", "oe").replace("æ", "ae")
     text = re.sub(r"[^\w\s]", " ", text)
     return re.sub(r"\s+", " ", text).strip()
+
+
+PARIS = ZoneInfo("Europe/Paris")
+
+
+def to_utc(dt: datetime) -> datetime:
+    """Aware datetime -> UTC. A naive one is refused: its zone would be a guess."""
+    if dt.tzinfo is None:
+        raise ValueError(f"horaire sans fuseau : {dt.isoformat()}")
+    return dt.astimezone(UTC)
+
+
+def paris_window(now: datetime, days: int) -> tuple[datetime, datetime]:
+    """[today 00:00, today + `days` 00:00[ in Europe/Paris (DST-safe), as aware datetimes."""
+    today = to_utc(now).astimezone(PARIS).date()
+    start = datetime.combine(today, time(0), PARIS)
+    end = datetime.combine(today + timedelta(days=days), time(0), PARIS)
+    return start, end
+
+
+def paris_date(dt: datetime) -> date:
+    """Calendar day of `dt` in Paris."""
+    return to_utc(dt).astimezone(PARIS).date()
