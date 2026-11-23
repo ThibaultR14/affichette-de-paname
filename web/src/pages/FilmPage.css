@@ -1,0 +1,136 @@
+/* Film page. Mobile first: 120 px poster beside the title, synopsis and showtimes below.
+   From 640 px: 260 px taped poster on the left, text and showtimes in the right column. */
+
+.film-page__back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 15px;
+}
+
+.film-page__card {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  grid-template-areas:
+    'poster header'
+    'overview overview'
+    'week week';
+  align-items: start;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.film-page__poster {
+  grid-area: poster;
+}
+
+.film-page__header {
+  grid-area: header;
+}
+
+.film-page__overview,
+.film-page__no-overview {
+  grid-area: overview;
+}
+
+.film-page__week {
+  grid-area: week;
+}
+
+.film-page__poster {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  background: var(--color-rule);
+  box-shadow: var(--shadow-photo);
+}
+
+.film-page__poster img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.film-page__poster--none {
+  background: transparent;
+  border: 2px dashed var(--color-muted);
+  box-shadow: none;
+}
+
+.film-page__header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.film-page__header h1 {
+  overflow-wrap: anywhere;
+}
+
+.film-page__original,
+.film-page__meta {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 15px;
+}
+
+.film-page__overview,
+.film-page__no-overview {
+  max-width: 65ch;
+  margin: 0;
+  line-height: 1.55;
+}
+
+.film-page__no-overview {
+  font-size: 22px;
+  transform: rotate(-1.5deg);
+  transform-origin: left;
+}
+
+.film-page__week {
+  max-width: 65ch;
+  margin-top: 24px;
+}
+
+.film-page__week h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.film-page__day {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.film-page__day h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.film-page__note {
+  color: var(--color-muted);
+}
+
+.film-page__error {
+  font-size: 22px;
+  transform: rotate(-1.5deg);
+}
+
+@media (min-width: 640px) {
+  .film-page__card {
+    grid-template-columns: 260px minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      'poster header'
+      'poster overview'
+      'poster week';
+    column-gap: 32px;
+  }
+
+  .film-page__poster {
+    transform: rotate(-1deg);
+  }
+}

@@ -88,7 +88,11 @@ export function DayScreenings({
       </h2>
       <FilmGrid>
         {films.map(({ key, ...film }) => (
-          <FilmCard key={key} {...film} />
+          <FilmCard
+            key={key}
+            {...film}
+            href={film.tmdbId === null ? undefined : `/film/${film.tmdbId}`}
+          />
         ))}
       </FilmGrid>
     </section>

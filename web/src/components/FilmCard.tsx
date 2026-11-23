@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react'
-import { formatRuntime, parisTime } from '../lib/days'
-import { Badge } from './Badge'
+import { metaLine } from '../lib/filmMeta'
+import { Link } from '../lib/router'
+import { ShowtimeList } from './ShowtimeList'
 import './FilmCard.css'
 
 export interface Showtime {
@@ -31,6 +32,8 @@ export interface FilmCardProps {
   posterUrl?: string | null
   cinemas: CinemaShowtimes[]
   /** Shown only when defined (signed-in user). */
+  /** Film page the title links to (matched films of the day view); absent: plain title. */
+  href?: string
   favorite?: boolean
   onToggleFavorite?: () => void
   /** Rotation of the taped photo on wide screens, ±1.8° at most. */
@@ -39,19 +42,10 @@ export interface FilmCardProps {
 
 const MAX_TILT = 1.8
 
-function metaLine(directors: string[], year?: number | null, runtimeMin?: number | null) {
-  const who = [directors.join(' et '), year].filter(Boolean).join(', ')
-  return [who, runtimeMin ? formatRuntime(runtimeMin) : null].filter(Boolean).join(' · ') // the runtime never starts a line
-}
-
-function endTime(startsAt: string, runtimeMin?: number | null): string | null {
-  if (!runtimeMin) return null
-  return parisTime(new Date(new Date(startsAt).getTime() + runtimeMin * 60_000))
-}
-
-/** Film card (« taped photo »), static: poster, title, meta, the day's showtimes by cinema. */
+/** Film card (« taped photo »): poster, title (linked to the film page when matched), meta, the day's showtimes by cinema. */
 export function FilmCard({
   tmdbId,
+  href,
   title,
   directors = [],
   year,
@@ -76,7 +70,9 @@ export function FilmCard({
       </div>
 
       <header className="film-card__header">
-        <h3 className="film-card__title">{title}</h3>
+        <h3 className="film-card__title">
+          {matched && href ? <Link href={href}>{title}</Link> : title}
+        </h3>
         {meta && <p className="film-card__meta">{meta}</p>}
         {!matched && <p className="hand film-card__missing">(on n'a pas trouvé ce film, désolé)</p>}
       </header>
@@ -102,47 +98,7 @@ export function FilmCard({
         </button>
       )}
 
-      <ul className="film-card__cinemas">
-        {cinemas.map((cinema) => (
-          <li key={cinema.cinemaId}>
-            <p className="film-card__cinema">
-              <span>{cinema.cinemaName}</span>
-              {cinema.acceptsUgc && <Badge>ugc</Badge>}
-            </p>
-            <ul className="film-card__times">
-              {cinema.showtimes.map((s) => {
-                const end = endTime(s.startsAt, runtimeMin)
-                const content = (
-                  <>
-                    <span className="showtime__hours">
-                      <time dateTime={s.startsAt}>{parisTime(new Date(s.startsAt))}</time>
-                      {end && <> → {end}</>}
-                    </span>
-                    {s.version && <Badge>{s.version}</Badge>}
-                    {s.format && <Badge>{s.format}</Badge>}
-                  </>
-                )
-                return (
-                  <li key={s.id}>
-                    {s.bookingUrl ? (
-                      <a
-                        className="showtime"
-                        href={s.bookingUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {content}
-                      </a>
-                    ) : (
-                      <span className="showtime showtime--nolink">{content}</span>
-                    )}
-                  </li>
-                )
-              })}
-            </ul>
-          </li>
-        ))}
-      </ul>
+      <ShowtimeList cinemas={cinemas} runtimeMin={runtimeMin} className="film-card__cinemas" />
     </article>
   )
 }

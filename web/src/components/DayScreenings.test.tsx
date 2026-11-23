@@ -67,6 +67,17 @@ describe('DayScreenings', () => {
     expect(link).toHaveTextContent('35mm')
   })
 
+  it('links a matched film to its page, not an unmatched one', async () => {
+    render(
+      <DayScreenings day={today} today={today} load={() => Promise.resolve([mepris, unmatched])} />,
+    )
+    expect(await screen.findByRole('link', { name: 'Le Mépris' })).toHaveAttribute(
+      'href',
+      '/film/266',
+    )
+    expect(screen.queryByRole('link', { name: 'Nuit des courts' })).toBeNull()
+  })
+
   it('shows an unmatched screening with the cinema title', async () => {
     render(<DayScreenings day={today} today={today} load={() => Promise.resolve([unmatched])} />)
     expect(await screen.findByRole('heading', { name: '1 film aujourd’hui' })).toBeInTheDocument()
