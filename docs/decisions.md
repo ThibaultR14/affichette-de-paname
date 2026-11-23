@@ -1,5 +1,10 @@
 # Journal des décisions
 
+## 2026-11-23 - Échec d'import : une issue GitHub par salle, sans commentaire
+- Contexte : #13 demande de prévenir l'admin quand une salle échoue (question ouverte 4 de la SPEC).
+- Décision : `report.py` ouvre `import en échec : <cinema_id>` (label `import`) avec le `GITHUB_TOKEN` du job. Si une issue ouverte porte déjà ce titre, rien n'est créé ni commenté (pas de bruit quotidien). Un run qui échoue en entier (code 2) ouvre `import en échec : global`. Fermeture à la main. Le workflow se réactive lui-même via l'API après chaque run planifié, pour que GitHub ne coupe pas le cron au bout de 60 jours sans commit.
+- Alternatives écartées : email Resend (quota partagé avec les alertes favoris) ; une seule issue pour toutes les salles (on ne voit plus quelle salle est réparée) ; un commentaire à chaque run en échec (spam).
+
 ## 2026-11-23 - Couverture : `last_success_at` à côté de `last_import_at`
 - Contexte : issue #12. `mark_failed` écrit `last_import_at`, donc une salle en échec depuis 3 jours aurait affiché « mis à jour il y a 2 h ».
 - Décision :

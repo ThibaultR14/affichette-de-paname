@@ -6,6 +6,8 @@ From `pipeline/` (reads the repo's `.env`):
     uv run python -m affichette.main --dry-run          # reads the database, writes nothing
     uv run python -m affichette.main --cinema champo    # one cinema (option repeatable)
     uv run python -m affichette.main                    # every cinema with a source
+In GitHub Actions, the report also goes to the job summary and a failing cinema opens an
+issue (see `report.py`).
 Exit code: 0 all ok, 1 at least one cinema failed, 2 bad arguments or configuration.
 """
 
@@ -13,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -27,6 +30,13 @@ from affichette.db import Db, DbError, DryRunDb
 from affichette.films import ensure_films
 from affichette.matching import DbTitleMatchStore, Matcher, MatchQuery
 from affichette.normalize import paris_window, to_utc
+from affichette.report import (
+    GithubIssues,
+    open_failure_issues,
+    open_global_issue,
+    run_url,
+    write_step_summary,
+)
 from affichette.sources import Cinema, Source, SourceError
 from affichette.sources.scare import ScareSource
 from affichette.tmdb import Tmdb, TmdbError
@@ -215,11 +225,22 @@ def main(argv: list[str] | None = None) -> int:
         tmdb = Tmdb()
         matcher = Matcher(tmdb, store=DbTitleMatchStore(db))
         report = run(db, tmdb, {"scare": ScareSource()}, matcher, _now(), args.cinema)
-    except (UsageError, DbError, TmdbError) as exc:
+    except UsageError as exc:
         log.error("%s", exc)
         return 2
-    print(report.summary())
-    print(matcher.report.summary())
+    except (DbError, TmdbError) as exc:  # nothing imported: configuration or service down
+        log.error("%s", exc)
+        write_step_summary(f"import : ÉCHEC global, {exc}", os.environ)
+        gh = None if args.dry_run else GithubIssues.from_env(os.environ)
+        if gh is not None:
+            open_global_issue(str(exc), gh, _now(), run_url(os.environ))
+        return 2
+    text = f"{report.summary()}\n{matcher.report.summary()}"
+    print(text)
+    write_step_summary(text, os.environ)
+    gh = None if args.dry_run else GithubIssues.from_env(os.environ)
+    if gh is not None:
+        open_failure_issues(report, gh, _now(), run_url(os.environ))
     log.info("TMDB : %(http)d requête(s), %(cache_hits)d depuis le cache", tmdb.stats)
     if isinstance(db, DryRunDb):
         print(db.summary())

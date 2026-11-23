@@ -263,6 +263,8 @@ def cli(monkeypatch):
     monkeypatch.setattr(main_mod, "Tmdb", FakeTmdb)
     monkeypatch.setattr(main_mod, "ScareSource", lambda: source["factory"]())
     monkeypatch.setattr(main_mod, "_now", lambda: NOW)
+    for var in ("GITHUB_TOKEN", "GITHUB_REPOSITORY", "GITHUB_STEP_SUMMARY"):
+        monkeypatch.delenv(var, raising=False)
     return db, source
 
 
@@ -290,3 +292,62 @@ def test_cli_exit_1_when_a_cinema_fails(cli):
 
 def test_cli_exit_2_on_unknown_cinema(cli):
     assert main_mod.main(["--cinema", "inconnue"]) == 2
+
+
+class FakeIssues:
+    def __init__(self, open_titles=None):
+        self.titles = dict(open_titles or {})
+        self.created: list[tuple[str, str]] = []
+
+    def open_titles(self):
+        return self.titles
+
+    def create(self, title, body):
+        self.created.append((title, body))
+        return 99
+
+
+def github_env(monkeypatch, tmp_path, issues):
+    summary = tmp_path / "summary.md"
+    monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary))
+    monkeypatch.setenv("GITHUB_REPOSITORY", "owner/repo")
+    monkeypatch.setenv("GITHUB_TOKEN", "t")
+    monkeypatch.setattr(main_mod.GithubIssues, "from_env", classmethod(lambda cls, env: issues))
+    return summary
+
+
+def test_cli_in_actions_writes_summary_and_opens_issue(cli, monkeypatch, tmp_path):
+    _, source = cli
+    source["factory"] = lambda: FailingFor(scare_pages(), {"champo"})
+    issues = FakeIssues()
+    summary = github_env(monkeypatch, tmp_path, issues)
+    assert main_mod.main([]) == 1
+    assert "champo : ÉCHEC" in summary.read_text(encoding="utf-8")
+    assert [t for t, _ in issues.created] == ["import en échec : champo"]
+
+
+def test_cli_dry_run_opens_no_issue(cli, monkeypatch, tmp_path):
+    _, source = cli
+    source["factory"] = lambda: FailingFor(scare_pages(), {"champo"})
+    issues = FakeIssues()
+    summary = github_env(monkeypatch, tmp_path, issues)
+    assert main_mod.main(["--dry-run"]) == 1
+    assert summary.exists()
+    assert issues.created == []
+
+
+def test_cli_whole_run_failure_opens_global_issue(cli, monkeypatch, tmp_path):
+    db, _ = cli
+    db.fail_on.add(("select", "cinemas"))
+    issues = FakeIssues()
+    summary = github_env(monkeypatch, tmp_path, issues)
+    assert main_mod.main([]) == 2
+    assert "global" in summary.read_text(encoding="utf-8")
+    assert [t for t, _ in issues.created] == ["import en échec : global"]
+
+
+def test_cli_unknown_cinema_opens_no_issue(cli, monkeypatch, tmp_path):
+    issues = FakeIssues()
+    github_env(monkeypatch, tmp_path, issues)
+    assert main_mod.main(["--cinema", "inconnue"]) == 2
+    assert issues.created == []

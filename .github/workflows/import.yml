@@ -1,0 +1,69 @@
+name: Import
+
+# Daily import of the screenings (pipeline/affichette/main.py).
+# Times in UTC (docs/decisions.md): after the SCARE update (~02:15 Paris), and on Wednesday
+# afternoon for the cinemas that publish their new week that day.
+on:
+  schedule:
+    - cron: "0 4 * * *"
+    - cron: "0 13 * * 3"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "dry-run : lit la base, n'écrit rien, n'ouvre pas d'issue"
+        type: boolean
+        default: false
+      cinemas:
+        description: "ids de salles séparés par des espaces (vide = toutes)"
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+  issues: write # one issue per failing cinema (report.py)
+  actions: write # keepalive step below
+
+concurrency:
+  group: import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: pipeline
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+      - run: uv sync --locked --no-dev
+      - name: Import
+        env:
+          TMDB_READ_TOKEN: ${{ secrets.TMDB_READ_TOKEN }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}
+          # Manual inputs go through env, never inlined in the script (injection).
+          DRY_RUN: ${{ inputs.dry_run }}
+          CINEMAS: ${{ inputs.cinemas }}
+        run: |
+          set -f # no glob expansion of the cinema ids
+          args=()
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          for id in $CINEMAS; do
+            case "$id" in
+              *[!a-z0-9-]*) echo "id de salle invalide : $id"; exit 2 ;;
+            esac
+            args+=(--cinema "$id")
+          done
+          uv run --no-dev python -m affichette.main "${args[@]}"
+      # GitHub disables the cron of a public repo after 60 days without a commit. Re-enabling the
+      # workflow through the API resets that delay (same trick as keepalive-workflow's API mode).
+      - name: Keepalive
+        if: always() && github.event_name == 'schedule'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/import.yml/enable"
