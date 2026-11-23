@@ -146,7 +146,7 @@
   text-underline-offset: 3px;
 }
 
-.showtime:hover {
+a.showtime:hover {
   color: var(--color-pen);
 }
 
@@ -177,4 +177,8 @@
     right: -14px;
     font-size: 26px;
   }
+}
+
+.showtime--nolink .showtime__hours {
+  text-decoration: none;
 }
