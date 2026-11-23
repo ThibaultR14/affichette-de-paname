@@ -1,0 +1,541 @@
+{
+  "meta": {
+    "generated_at": "2026-11-22T19:05:14+00:00",
+    "days": 7,
+    "window_start": "2026-11-21T23:00:00+00:00",
+    "window_end": "2026-11-28T22:59:59+00:00",
+    "seances_count": 17,
+    "seances_max": 1500,
+    "truncated": false,
+    "duration_ms": 191,
+    "schema_version": 4,
+    "cached": false
+  },
+  "seances_week": [
+    {
+      "id": "19603",
+      "title": "Reflet Medicis:L'Amérique des autres:22/11/2026 11:00:00",
+      "date": "2026-11-22T10:00:00",
+      "booking_url": "https://www.ticketingcine.com/EMS0824/FRMP9F5#showsession?id=emsx082400076834&ps=ecransparis",
+      "is_cancelled": false,
+      "is_special": false,
+      "version": "VOST",
+      "format": "",
+      "type": "standard",
+      "event_label": "",
+      "featured_tags": [],
+      "info": "",
+      "film_id": "16627",
+      "salle_id": "584"
+    },
+    {
+      "id": "19577",
+      "title": "Reflet Medicis:Pola X:22/11/2026 11:00:00",
+      "date": "2026-11-22T10:00:00",
+      "booking_url": "https://www.ticketingcine.com/EMS0824/FRBMNU2#showsession?id=emsx082400076820&ps=ecransparis",
+      "is_cancelled": false,
+      "is_special": false,
+      "version": "VF",
+      "format": "",
+      "type": "standard",
+      "event_label": "",
+      "featured_tags": [],
+      "info": "",
+      "film_id": "18930",
+      "salle_id": "586"
+    },
+    {
+      "id": "18496",
+      "title": "Reflet Medicis:La Couleuvre noire:22/11/2026 11:00:00",
+      "date": "2026-11-22T10:00:00",
+      "booking_url": "https://www.ticketingcine.com/EMS0824/FRRP2FE#showsession?id=emsx082400076508&ps=ecransparis",
+      "is_cancelled": false,
+      "is_special": false,
+      "version": "VOST",
+      "format": "",
+      "type": "standard",
+      "event_label": "",
+      "featured_tags": [],
+      "info": "",
+      "film_id": "18495",
+      "salle_id": "596"
+    },
+    {
+      "id": "19599",
+      "title": "Reflet Medicis:Pierre ou les ambiguïtés:22/11/2026 13:15:00",
+      "date": "2026-11-22T12:15:00",
+      "booking_url": "https://www.ticketingcine.com/EMS0824/FRIA5S5#showsession?id=emsx082400076829&ps=ecransparis",
+      "is_cancelled": false,
+      "is_special": false,
+      "version": "VF",
+      "format": "",
+      "type": "standard",
+      "event_label": "",
+      "featured_tags": [],
+      "info": "",
+      "film_id": "18982",
+      "salle_id": "596"
+    },
+    {
+      "id": "19625",
+      "title": "Reflet Medicis:Une femme comme Eva:22/11/2026 13:40:00",
+      "date": "2026-11-22T12:40:00",
+      "booking_url": "https://www.ticketingcine.com/EMS0824/FRQESCL#showsession?id=emsx082400076823&ps=ecransparis",
+      "is_cancelled": false,
+      "is_special": false,
+      "version": "VOST",
+      "format": "",
+      "type": "standard",
+      "event_label": "",
+      "featured_tags": [],
+      "info": "",
+      "film_id": "19150",
+      "salle_id": "586"
+    },
+    {
+      "id": "19591",
+      "title": "Reflet Medicis:Si tu tends l'oreille:22/11/2026 16:30:00",
+      "date": "2026-11-22T15:30:00",
+      "booking_url": "https://www.ticketingcine.com/EMS0824/FRHF8D6#showsession?id=emsx082400076832&ps=ecransparis",
+      "is_cancelled": false,
+      "is_special": false,
+      "version": "VOST",
+      "format": "",
+      "type": "standard",
+      "event_label": "",
+      "featured_tags": [],
+      "info": "",
+      "film_id": "18430",
+      "salle_id": "596"
+    },
+    {
+      "id": "19579",
+      "title": "Reflet Medicis:Pola X:22/11/2026 21:00:00",
+      "date": "2026-11-22T20:00:00",
+      "booking_url": "https://www.ticketingcine.com/EMS0824/FRBMNU2#showsession?id=emsx082400076822&ps=ecransparis",
+      "is_cancelled": false,
+      "is_special": false,
+      "version": "VF",
+      "format": "",
+      "type": "standard",
+      "event_label": "",
+      "featured_tags": [],
+      "info": "",
+      "film_id": "18930",
+      "salle_id": "586"
+    },
+    {
+      "id": "19568",
+      "title": "Reflet Medicis:Pola X:23/11/2026 11:00:00",
+      "date": "2026-11-23T10:00:00",
+      "booking_url": "https://www.ticketingcine.com/EMS0824/FRBMNU2#showsession?id=emsx082400076748&ps=ecransparis",
+      "is_cancelled": true,
+      "is_special": false,
+      "version": "VF",
+      "format": "",
+      "type": "standard",
+      "event_label": "",
+      "featured_tags": [],
+      "info": "",
+      "film_id": "18930",
+      "salle_id": "586"
+    },
+    {
+      "id": "18652",
+      "title": "Reflet Médicis:Mysterious Skin:24/11/2026 20:00:00",
+      "date": "2026-11-24T19:00:00",
+      "booking_url": "https://www.ticketingcine.com/?EMS0824#showsession?id=emsx082400076647",
+      "is_cancelled": false,
+      "is_special": false,
+      "version": "VOST",
+      "format": "",
+      "type": "avant-premiere",
+      "event_label": "Avant-première",
+      "featured_tags": [],
+      "info": "",
+      "film_id": "18651",
+      "salle_id": "596"
+    },
+    {
+      "id": "18657",
+      "title": "Reflet Medicis:Mysterious Skin:24/11/2026 20:00:00",
+      "date": "2026-11-24T19:00:00",
+      "booking_url": "https://www.ticketingcine.com/EMS0824/FR4K59H#showsession?id=emsx082400076647&ps=ecransparis",
+      "is_cancelled": false,
+      "is_special": true,
+      "version": "VOST",
+      "format": "",
+      "type": "avant-premiere",
+      "event_label": "Avant-première",
+      "featured_tags": [
+        "Avant-première"
+      ],
+      "info": "Avant-première",
+      "film_id": "18656",
+      "salle_id": "596"
+    },
+    {
+      "id": "19140",
+      "title": "Reflet Medicis:Merci d'être venu:25/11/2026 20:00:00",
+      "date": "2026-11-25T19:00:00",
+      "booking_url": "https://www.ticketingcine.com/EMS0824/FRVOCV6#showsession?id=emsx082400076676&ps=ecransparis",
+      "is_cancelled": false,
+      "is_special": true,
+      "version": "VF",
+      "format": "",
+      "type": "standard",
+      "event_label": "first session",
+      "featured_tags": [
+        "first session"
+      ],
+      "info": "first session",
+      "film_id": "6718",
+      "salle_id": "596"
+    },
+    {
+      "id": "19588",
+      "title": "Reflet Medicis:Si tu tends l'oreille:24/11/2026 21:30:00",
+      "date": "2026-11-27T23:30:00",
+      "booking_url": "https://www.ticketingcine.com/EMS0824/FRHF8D6#showsession?id=emsx082400076803&ps=ecransparis",
+      "is_cancelled": false,
+      "is_special": false,
+      "version": "VOST",
+      "format": "",
+      "type": "standard",
+      "event_label": "",
+      "featured_tags": [],
+      "info": "",
+      "film_id": "18430",
+      "salle_id": "584"
+    },
+    {
+      "id": "19612",
+      "title": "Reflet Medicis:Une femme comme Eva:24/11/2026 16:00:00",
+      "date": "2026-11-24T15:00:00",
+      "booking_url": "",
+      "is_cancelled": false,
+      "is_special": false,
+      "version": "VOST",
+      "format": "",
+      "type": "standard",
+      "event_label": "",
+      "featured_tags": [],
+      "info": "",
+      "film_id": "19150",
+      "salle_id": "586"
+    },
+    {
+      "id": "19609",
+      "title": "Reflet Medicis:Une femme comme Eva:23/11/2026 18:20:00",
+      "date": "2026-11-21T22:30:00",
+      "booking_url": "https://www.ticketingcine.com/EMS0824/FRQESCL#showsession?id=emsx082400076713&ps=ecransparis",
+      "is_cancelled": false,
+      "is_special": false,
+      "version": "VOST",
+      "format": "",
+      "type": "standard",
+      "event_label": "",
+      "featured_tags": [],
+      "info": "",
+      "film_id": "19150",
+      "salle_id": "586"
+    },
+    {
+      "id": "19544",
+      "title": "Reflet Medicis:Fais-moi un signe:24/11/2026 19:20:00",
+      "date": "2026-11-28T23:15:00",
+      "booking_url": "https://www.ticketingcine.com/EMS0824/FR5GZ5T#showsession?id=emsx082400076765&ps=ecransparis",
+      "is_cancelled": false,
+      "is_special": false,
+      "version": "VOST",
+      "format": "",
+      "type": "standard",
+      "event_label": "",
+      "featured_tags": [],
+      "info": "",
+      "film_id": "18106",
+      "salle_id": "584"
+    },
+    {
+      "id": "19253",
+      "title": "Majestic Bastille:En promenade:22/11/2026 10:00:00",
+      "date": "2026-11-22T09:00:00",
+      "booking_url": "https://www.ticketingcine.com/EMS0821/FR7BMPJ#showsession?id=emsx082100059971&ps=ecransparis",
+      "is_cancelled": false,
+      "is_special": false,
+      "version": "VF",
+      "format": "",
+      "type": "standard",
+      "event_label": "",
+      "featured_tags": [],
+      "info": "",
+      "film_id": "7688",
+      "salle_id": "171"
+    },
+    {
+      "id": "19525",
+      "title": "Majestic Passy:Moulin:22/11/2026 10:40:00",
+      "date": "2026-11-22T09:40:00",
+      "booking_url": "https://www.ticketingcine.com/EMS0823/FRLXIDH#showsession?id=emsx082300077889&ps=ecransparis",
+      "is_cancelled": false,
+      "is_special": false,
+      "version": "VF",
+      "format": "",
+      "type": "standard",
+      "event_label": "",
+      "featured_tags": [],
+      "info": "",
+      "film_id": "17944",
+      "salle_id": "539"
+    }
+  ],
+  "films_by_id": {
+    "16627": {
+      "drupal_internal__nid": 16627,
+      "title": "L'Amérique des autres",
+      "original_title": "Tuđa Amerika",
+      "release_date": "1995-12-20T00:00:00",
+      "duration": 91,
+      "genres": [
+        "Drame"
+      ],
+      "projection_formats": [],
+      "director": "Goran Paskaljević",
+      "directors": [
+        "Goran Paskaljević"
+      ],
+      "year": 0
+    },
+    "18930": {
+      "drupal_internal__nid": 18930,
+      "title": "Pola X",
+      "original_title": "Pola X",
+      "release_date": "1999-05-13T00:00:00",
+      "duration": 134,
+      "genres": [
+        "Drame"
+      ],
+      "projection_formats": [],
+      "director": "Leos Carax",
+      "directors": [
+        "Leos Carax"
+      ],
+      "year": 0
+    },
+    "18495": {
+      "drupal_internal__nid": 18495,
+      "title": "La Couleuvre noire",
+      "original_title": "La Couleuvre noire",
+      "release_date": "2026-03-25T00:00:00",
+      "duration": 85,
+      "genres": [
+        "Drame"
+      ],
+      "projection_formats": [],
+      "director": "Aurélien Vernhes-Lermusiaux",
+      "directors": [
+        "Aurélien Vernhes-Lermusiaux"
+      ],
+      "year": 0
+    },
+    "18982": {
+      "drupal_internal__nid": 18982,
+      "title": "Pierre ou les ambiguïtés",
+      "original_title": "Pierre ou les ambiguïtés",
+      "release_date": "2026-11-11T00:00:00",
+      "duration": 169,
+      "genres": [
+        "Drame"
+      ],
+      "projection_formats": [],
+      "director": "Leos Carax",
+      "directors": [
+        "Leos Carax"
+      ],
+      "year": 0
+    },
+    "19150": {
+      "drupal_internal__nid": 19150,
+      "title": "Une femme comme Eva",
+      "original_title": "Een Vrouw als Eva",
+      "release_date": "2026-11-18T00:00:00",
+      "duration": 113,
+      "genres": [
+        "Drame"
+      ],
+      "projection_formats": [],
+      "director": "Nouchka van Brakel",
+      "directors": [
+        "Nouchka van Brakel"
+      ],
+      "year": 0
+    },
+    "18430": {
+      "drupal_internal__nid": 18430,
+      "title": "Si tu tends l'oreille",
+      "original_title": "耳をすませば",
+      "release_date": "2026-11-04T00:00:00",
+      "duration": 110,
+      "genres": [
+        "Animation"
+      ],
+      "projection_formats": [],
+      "director": "Yoshifumi Kondo",
+      "directors": [
+        "Yoshifumi Kondo"
+      ],
+      "year": 0
+    },
+    "18651": {
+      "drupal_internal__nid": 18651,
+      "title": "Mysterious Skin",
+      "original_title": "",
+      "release_date": "",
+      "duration": 145,
+      "genres": [
+        "Drame"
+      ],
+      "projection_formats": [],
+      "director": "Gregg Araki",
+      "directors": [
+        "Gregg Araki"
+      ],
+      "year": 0
+    },
+    "18656": {
+      "drupal_internal__nid": 18656,
+      "title": "Mysterious Skin",
+      "original_title": "Mysterious Skin",
+      "release_date": "2005-03-30T00:00:00",
+      "duration": 105,
+      "genres": [
+        "Drame"
+      ],
+      "projection_formats": [],
+      "director": "Gregg Araki",
+      "directors": [
+        "Gregg Araki"
+      ],
+      "year": 0
+    },
+    "6718": {
+      "drupal_internal__nid": 6718,
+      "title": "Merci d'être venu",
+      "original_title": "Merci d'être venu",
+      "release_date": "2026-11-25T00:00:00",
+      "duration": 85,
+      "genres": [
+        "Documentaire"
+      ],
+      "projection_formats": [],
+      "director": "Alain Cavalier",
+      "directors": [
+        "Alain Cavalier"
+      ],
+      "year": 0
+    },
+    "18106": {
+      "drupal_internal__nid": 18106,
+      "title": "Fais-moi un signe",
+      "original_title": "Boku ga ikiteru Futatsu no sekai",
+      "release_date": "2026-11-18T00:00:00",
+      "duration": 105,
+      "genres": [
+        "Drame"
+      ],
+      "projection_formats": [],
+      "director": "Mipo O",
+      "directors": [
+        "Mipo O"
+      ],
+      "year": 0
+    },
+    "7688": {
+      "drupal_internal__nid": 7688,
+      "title": "En promenade",
+      "original_title": "En promenade...",
+      "release_date": "2010-09-22T00:00:00",
+      "duration": 36,
+      "genres": [
+        "Animation"
+      ],
+      "projection_formats": [],
+      "director": "BJÖRK JAWORSKI Alicja, GEFFENBLAD Lotta, GEFFENBLAD Uzi, GROOTHUIZEN Raimke, KALNAELLIS Reinis, MELCHIOR Siri, SCHUNEMANN Jutta",
+      "directors": [
+        "BJÖRK JAWORSKI Alicja",
+        "GEFFENBLAD Lotta",
+        "GEFFENBLAD Uzi",
+        "GROOTHUIZEN Raimke",
+        "KALNAELLIS Reinis",
+        "MELCHIOR Siri",
+        "SCHUNEMANN Jutta"
+      ],
+      "year": 0
+    },
+    "17944": {
+      "drupal_internal__nid": 17944,
+      "title": "Moulin",
+      "original_title": "Moulin",
+      "release_date": "2026-10-28T00:00:00",
+      "duration": 134,
+      "genres": [
+        "Histoire"
+      ],
+      "projection_formats": [],
+      "director": "Lászlo Nemes",
+      "directors": [
+        "Lászlo Nemes"
+      ],
+      "year": 0
+    }
+  },
+  "salles_by_id": {
+    "584": {
+      "drupal_internal__nid": 584,
+      "title": "Salle 3 (Cinéma Reflet Medicis)",
+      "cinema_id": "583"
+    },
+    "586": {
+      "drupal_internal__nid": 586,
+      "title": "Salle 2 (Cinéma Reflet Medicis)",
+      "cinema_id": "583"
+    },
+    "596": {
+      "drupal_internal__nid": 596,
+      "title": "Salle 1 (Cinéma Reflet Medicis)",
+      "cinema_id": "583"
+    },
+    "171": {
+      "drupal_internal__nid": 171,
+      "title": "Salle 2 (Cinéma Majestic Bastille)",
+      "cinema_id": "165"
+    },
+    "539": {
+      "drupal_internal__nid": 539,
+      "title": "Salle 3 (Cinéma Majestic Passy)",
+      "cinema_id": "518"
+    }
+  },
+  "cinemas_by_id": {
+    "1": {
+      "drupal_internal__nid": 1,
+      "title": "L'Arlequin"
+    },
+    "165": {
+      "drupal_internal__nid": 165,
+      "title": "Majestic Bastille"
+    },
+    "422": {
+      "drupal_internal__nid": 422,
+      "title": "Escurial"
+    },
+    "518": {
+      "drupal_internal__nid": 518,
+      "title": "Majestic Passy"
+    },
+    "583": {
+      "drupal_internal__nid": 583,
+      "title": "Reflet Medicis"
+    }
+  }
+}

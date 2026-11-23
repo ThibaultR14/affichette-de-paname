@@ -25,7 +25,7 @@ Légende : ✅ fourni, ◐ partiel ou en texte libre, ✗ absent, ? non vérifi�
 | Le Louxor | SCARE (événements) · Webedia en attente | ◐ événements · ~13 j via Webedia | ✗ · ✅ | ✗ · ✅ | ✗ · ✅ | Licence Ouverte · CGU Webedia : exploitation interdite sans accord | V1 partiel, accord demandé |
 | Sept Parnassiens | SCARE (événements) · Webedia en attente | ◐ · ~18 j | ✗ · ✅ | ✗ · ✅ | ◐ · ✅ | idem | V1 partiel, accord demandé |
 | Épée de Bois | SCARE (événements) · Webedia en attente | ◐ · ~18 j | ✗ · ✅ | ✗ · ✅ | ◐ · ✅ | idem | V1 partiel, accord demandé |
-| Reflet Médicis | API Dulac `/api/home-bootstrap` | dense jusqu'au mardi, puis quelques séances | ✅ VF/VOST | ✗ (champ vide) | ✅ ticketingcine | robots `Allow: /`, CGU ? | #14, après lecture des CGU |
+| Reflet Médicis | API Dulac `/api/home-bootstrap` | dense jusqu'au mardi, puis quelques séances | ✅ VF/VOST | ✗ (champ vide) | ✅ ticketingcine | robots `Allow: /`, CGU à lire avant la mise en ligne | **V1 (#24)** |
 | Filmothèque du Quartier Latin | HTML (grille de la semaine) | semaine en cours (mer. → mar.) | ? | ◐ texte (« numérique 4K ») | ✗ (lien générique) | robots vide, mentions légales sans clause | #14 |
 | Espace Saint-Michel | HTML (fiches film) | semaine en cours | ? | ◐ texte | ✗ (générique) | robots WP classique, CGU ? | #14 |
 | Cinéma des Cinéastes | HTML (sélecteur de jours) | 7 j | ◐ | ? | ? | robots vide, CGU ? | #14 (à creuser : séances absentes du HTML serveur) |
@@ -68,7 +68,15 @@ Une fiche par salle (adresse, historique, lien vers le site), mais **aucune séa
 ### 3. API Dulac (Reflet Médicis)
 - Accès : `GET https://www.dulaccinemas.com/api/home-bootstrap?days=7`. Elle renvoie les 5 salles Dulac (Reflet Médicis, Majestic Passy, Majestic Bastille, L'Arlequin, Escurial) : 220 séances, `truncated: false`.
 - Champs : `seances_week[]` (`date` **en UTC sans « Z »**, `version`, `booking_url`, `is_cancelled`, `film_id`), `films_by_id` (`title`, `original_title`, `duration`, `directors`). `year` vaut souvent 0.
-- robots.txt : `Allow: /` pour `*`. Les CGU restent à lire avant #14.
+- robots.txt : `Allow: /` pour `*`. **CGU non lues** : le site tourne en local, elles sont à lire avant la mise en ligne (même échéance que #29).
+- Implémenté dans #24 (`sources/dulac.py`). Constats sur la réponse du 22/11 :
+  - pas de salle sur la séance : il faut passer par `salles_by_id[salle_id].cinema_id` (Reflet = `583`, salles 584, 586, 596) ;
+  - l'heure UTC est confirmée par le `title` de la séance (« …:22/11/2026 21:00:00 » pour `date` `2026-11-22T20:00:00`) ;
+  - doublon : *Mysterious Skin* le 24/11 à 20 h existe deux fois (séances 18652 et 18657, fiches 18651 et 18656), même salle de projection et même `showsession id` : fusion par salle et heure ;
+  - `release_date` est la date de ressortie (*Pierre ou les ambiguïtés* : 2026-11-11), donc pas une année de production ;
+  - `is_special` est aussi vrai pour « first session » (jour de sortie) : seul `type` (`avant-premiere`) marque un événement ;
+  - `format` et `projection_formats` sont vides sur tout l'extrait.
+- Essai réel le 23/11 (`--dry-run`) : 32 séances jusqu'au 25/11, 29 avec une correspondance TMDB (par réalisateur). Sans correspondance : *Pierre ou les ambiguïtés* et *L'Amérique des autres* (*Tuđa Amerika*, 1995).
 
 ### 4. Webedia / BoxOffice (8 salles, en attente d'accord)
 - Sites Gatsby, une API sur le domaine de chaque salle :

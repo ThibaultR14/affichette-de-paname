@@ -8,6 +8,7 @@ from affichette.db import DryRunDb
 from affichette.main import UsageError, error_message, run
 from affichette.matching import DbTitleMatchStore, Matcher
 from affichette.sources import SourceError
+from affichette.sources.dulac import DulacSource
 from affichette.sources.scare import ScareSource
 from affichette.tmdb import Cached
 from tests.fakes import FakeDb, FakeResponse, FakeSession, fixture
@@ -84,6 +85,10 @@ def scare_pages() -> ScareSource:
     )
 
 
+def dulac_api() -> DulacSource:
+    return DulacSource(FakeSession(FakeResponse(200, fixture("dulac/home-bootstrap.json"))))
+
+
 def do_run(db, tmdb=None, source=None, only=None, now=NOW):
     tmdb = tmdb or FakeTmdb()
     matcher = Matcher(tmdb, overrides={}, store=DbTitleMatchStore(db), now=now)
@@ -118,6 +123,21 @@ def test_full_import_writes_every_scare_cinema():
     assert states["champo"]["coverage_until"] == "2026-11-28"
     assert states["champo"]["last_import_ok"] is True
     assert "last_import_at" not in states["reflet-medicis"]
+
+
+def test_dulac_and_scare_in_the_same_run():
+    db = FakeDb(now=NOW, cinemas=cinemas())
+    tmdb = FakeTmdb()
+    matcher = Matcher(tmdb, overrides={}, store=DbTitleMatchStore(db), now=NOW)
+    sources = {"scare": scare_pages(), "dulac": dulac_api()}
+    report = run(db, tmdb, sources, matcher, NOW, clock=lambda: NOW)
+    assert not report.failed
+    results = {r.cinema_id: r for r in report.results}
+    assert results["reflet-medicis"].n_screenings == 11
+    assert results["reflet-medicis"].coverage_until.isoformat() == "2026-11-28"
+    reflet = [r for r in db.tables["screenings"] if r["cinema_id"] == "reflet-medicis"]
+    assert all(r["source_key"].startswith("dulac:reflet-medicis:") for r in reflet)
+    assert "christine" not in results  # source "none"
 
 
 def test_rerun_is_idempotent():
@@ -262,6 +282,7 @@ def cli(monkeypatch):
     monkeypatch.setattr(main_mod.Db, "from_env", classmethod(lambda cls: db))
     monkeypatch.setattr(main_mod, "Tmdb", FakeTmdb)
     monkeypatch.setattr(main_mod, "ScareSource", lambda: source["factory"]())
+    monkeypatch.setattr(main_mod, "DulacSource", dulac_api)
     monkeypatch.setattr(main_mod, "_now", lambda: NOW)
     for var in ("GITHUB_TOKEN", "GITHUB_REPOSITORY", "GITHUB_STEP_SUMMARY"):
         monkeypatch.delenv(var, raising=False)
