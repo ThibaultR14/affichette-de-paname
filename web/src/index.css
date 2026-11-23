@@ -48,6 +48,36 @@ h1 {
   color: var(--color-pen);
 }
 
+/* Strip of tape on a poster (film card, film page). */
+.tape {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 56px;
+  height: 20px;
+  margin-left: -28px;
+  background: var(--tape);
+  transform: rotate(-3deg);
+}
+
+@media (min-width: 640px) {
+  .tape {
+    width: 72px;
+    height: 22px;
+    margin-left: -36px;
+  }
+}
+
+/* Read by screen readers only. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* A button that looks like a link (theme toggle, « tout effacer »). */
 .link-button {
   display: inline-flex;

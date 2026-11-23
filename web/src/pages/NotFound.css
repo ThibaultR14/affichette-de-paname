@@ -1,0 +1,6 @@
+.not-found__note {
+  margin-top: 16px;
+  font-size: 22px;
+  transform: rotate(-2deg);
+  transform-origin: left;
+}

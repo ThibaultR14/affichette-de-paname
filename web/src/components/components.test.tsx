@@ -149,6 +149,21 @@ describe('FilmCard', () => {
     expect(screen.queryByText(/on n'a pas trouvé/)).not.toBeInTheDocument()
   })
 
+  it('links the title of a matched film to its page, in place', () => {
+    render(<FilmCard tmdbId={266} href="/film/266" title="Le Mépris" cinemas={cinemas} />)
+    const title = screen.getByRole('link', { name: 'Le Mépris' })
+    expect(title).toHaveAttribute('href', '/film/266')
+    expect(title).not.toHaveAttribute('target')
+    fireEvent.click(title)
+    expect(window.location.pathname).toBe('/film/266')
+    window.history.replaceState(null, '', '/')
+  })
+
+  it('keeps a plain title without href (styleguide), or without TMDB match', () => {
+    render(<FilmCard tmdbId={266} title="Le Mépris" cinemas={cinemas} />)
+    expect(screen.queryByRole('link', { name: 'Le Mépris' })).toBeNull()
+  })
+
   it('puts the ugc badge next to UGC cinemas only', () => {
     render(<FilmCard tmdbId={1} title="x" cinemas={cinemas} />)
     expect(screen.getByText('Le Champo').parentElement).toHaveTextContent('ugc')
@@ -174,7 +189,7 @@ describe('FilmCard', () => {
       },
     ]
     render(<FilmCard tmdbId={1} title="x" cinemas={noLink} />)
-    expect(screen.queryByRole('link')).toBeNull()
+    expect(screen.queryByRole('link', { name: /14:00/ })).toBeNull()
     expect(screen.getByText('14:00')).toBeInTheDocument()
   })
 

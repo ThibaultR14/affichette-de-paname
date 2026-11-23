@@ -1,16 +1,31 @@
 import { Suspense, lazy } from 'react'
 import App from './App'
+import { parseRoute, usePathname } from './lib/router'
+import { NotFound } from './pages/NotFound'
 
-// No router yet (it comes with the main view): /styleguide is the only other page, loaded lazily.
+// Pages other than home are loaded lazily.
 const Styleguide = lazy(() => import('./pages/Styleguide'))
+const FilmPage = lazy(() => import('./pages/FilmPage').then((m) => ({ default: m.FilmPage })))
 
-export default function Root({ pathname }: { pathname: string }) {
-  if (pathname.replace(/\/+$/, '') === '/styleguide') {
-    return (
-      <Suspense fallback={null}>
-        <Styleguide />
-      </Suspense>
-    )
+export default function Root() {
+  const route = parseRoute(usePathname())
+  switch (route.page) {
+    case 'home':
+      return <App />
+    case 'styleguide':
+      return (
+        <Suspense fallback={null}>
+          <Styleguide />
+        </Suspense>
+      )
+    case 'film':
+      return (
+        <Suspense fallback={null}>
+          {/* keyed: another film starts from a fresh page */}
+          <FilmPage key={route.tmdbId} tmdbId={route.tmdbId} />
+        </Suspense>
+      )
+    case 'not-found':
+      return <NotFound />
   }
-  return <App />
 }

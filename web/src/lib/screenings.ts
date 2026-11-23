@@ -82,32 +82,20 @@ function tiltFor(key: string): number {
 
 const byName = (a: string, b: string) => a.localeCompare(b, 'fr', { sensitivity: 'base' })
 
-/**
- * One card per film (TMDB id, else the cinema's title), cinemas by name, showtimes by time,
- * cards by title. Rows are expected sorted by start time.
- */
-export function groupByFilm(rows: ScreeningRow[]): DayFilm[] {
-  const cards = new Map<string, DayFilm & { byCinema: Map<string, CinemaShowtimes> }>()
+/** The fields of a screening that a showtime list needs. */
+export type ShowtimeRow = Pick<
+  ScreeningRow,
+  'source_key' | 'starts_at' | 'version' | 'format' | 'booking_url' | 'cinema'
+>
 
+/**
+ * Showtimes by cinema (cinemas by name, showtimes by time). A showtime links to its booking
+ * page, else to the cinema programme, else nowhere.
+ */
+export function groupByCinema(rows: ShowtimeRow[]): CinemaShowtimes[] {
+  const byCinema = new Map<string, CinemaShowtimes>()
   for (const r of rows) {
-    const key = r.film ? `tmdb:${r.film.tmdb_id}` : `raw:${titleKey(r.raw_title)}`
-    let card = cards.get(key)
-    if (!card) {
-      card = {
-        key,
-        tmdbId: r.film?.tmdb_id ?? null,
-        title: r.film?.title ?? r.raw_title.trim(),
-        directors: r.film?.directors ?? [],
-        year: r.film?.year ?? null,
-        runtimeMin: r.film?.runtime_min ?? null,
-        posterUrl: r.film?.poster_path ? `${POSTER_BASE}${r.film.poster_path}` : null,
-        cinemas: [],
-        tilt: tiltFor(key),
-        byCinema: new Map(),
-      }
-      cards.set(key, card)
-    }
-    let cinema = card.byCinema.get(r.cinema.id)
+    let cinema = byCinema.get(r.cinema.id)
     if (!cinema) {
       cinema = {
         cinemaId: r.cinema.id,
@@ -115,7 +103,7 @@ export function groupByFilm(rows: ScreeningRow[]): DayFilm[] {
         acceptsUgc: r.cinema.accepts_ugc,
         showtimes: [],
       }
-      card.byCinema.set(r.cinema.id, cinema)
+      byCinema.set(r.cinema.id, cinema)
     }
     cinema.showtimes.push({
       id: r.source_key,
@@ -125,18 +113,40 @@ export function groupByFilm(rows: ScreeningRow[]): DayFilm[] {
       bookingUrl: r.booking_url ?? r.cinema.website_url,
     })
   }
-
-  return [...cards.values()]
-    .map(({ byCinema, ...card }) => ({
-      ...card,
-      cinemas: [...byCinema.values()]
-        .sort((a, b) => byName(a.cinemaName, b.cinemaName))
-        .map((c) => ({
-          ...c,
-          showtimes: [...c.showtimes].sort(
-            (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime(),
-          ),
-        })),
+  return [...byCinema.values()]
+    .sort((a, b) => byName(a.cinemaName, b.cinemaName))
+    .map((c) => ({
+      ...c,
+      showtimes: [...c.showtimes].sort(
+        (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime(),
+      ),
     }))
+}
+
+/** One card per film (TMDB id, else the cinema's title), cards by title. */
+export function groupByFilm(rows: ScreeningRow[]): DayFilm[] {
+  const byFilm = new Map<string, ScreeningRow[]>()
+  for (const r of rows) {
+    const key = r.film ? `tmdb:${r.film.tmdb_id}` : `raw:${titleKey(r.raw_title)}`
+    const group = byFilm.get(key)
+    if (group) group.push(r)
+    else byFilm.set(key, [r])
+  }
+
+  return [...byFilm]
+    .map(([key, group]): DayFilm => {
+      const { film, raw_title } = group[0]
+      return {
+        key,
+        tmdbId: film?.tmdb_id ?? null,
+        title: film?.title ?? raw_title.trim(),
+        directors: film?.directors ?? [],
+        year: film?.year ?? null,
+        runtimeMin: film?.runtime_min ?? null,
+        posterUrl: film?.poster_path ? `${POSTER_BASE}${film.poster_path}` : null,
+        cinemas: groupByCinema(group),
+        tilt: tiltFor(key),
+      }
+    })
     .sort((a, b) => byName(a.title, b.title))
 }

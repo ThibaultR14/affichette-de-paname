@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 
@@ -135,8 +135,8 @@ describe('App', () => {
     it('drops unknown cinemas from the URL once the cinemas are loaded', async () => {
       window.history.replaceState(null, '', '/?salles=champo,mk2-cultissime')
       render(<App />)
-      await screen.findByRole('heading', { name: 'les 2 salles' })
-      expect(window.location.search).toBe('?salles=champo')
+      // App's own fetchCinemas cleans the URL: it may resolve after CinemaList's.
+      await waitFor(() => expect(window.location.search).toBe('?salles=champo'))
     })
   })
 })

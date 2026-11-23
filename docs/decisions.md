@@ -9,6 +9,14 @@
   - « il y a … » calculé une fois à l'ouverture de la page, sans minuteur.
 - Alternatives écartées : `mark_failed` qui n'écrit plus `last_import_at` (pas de migration, mais on perd la date de la dernière tentative) ; lire `import_runs` depuis le front (table privée).
 
+## 2026-11-23 - Routeur maison, fiche film sans filtres (#11)
+- Contexte : la fiche `/film/:tmdbId` est la première vraie route. Le site en aura quatre (`/`, `/film/:id`, `/favoris`, `/connexion`).
+- Décision :
+  - un routeur de ~70 lignes (`lib/router.ts`) : `pushState` + `popstate` et un `Link` qui garde un vrai `href`. L'état des filtres reste dans la query string, géré par les hooks existants.
+  - la fiche montre toutes les séances des 7 jours, toutes salles, sans appliquer les filtres de l'accueil (on veut tout voir d'un film précis). Le retour vers l'accueil passe par l'historique, qui garde le jour et les filtres.
+  - un film absent de `films` ou un id mal formé → page 404 propre (statut HTTP 200, SPA). Tout chemin inconnu → la même page, au lieu de l'accueil.
+- Alternatives écartées : react-router (une dépendance et un modèle de données pour 4 routes) ; reporter les filtres sur la fiche (un film masqué par patrimoine resterait introuvable depuis son propre lien) ; un `404.html` sur Pages (couperait le routage SPA).
+
 ## 2026-11-23 - Filtres : côté client, patrimoine écrit seulement quand il est coupé
 - Contexte : issue #10, filtres salles / carte UGC / patrimoine, combinables et partageables par l'URL.
 - Décision :

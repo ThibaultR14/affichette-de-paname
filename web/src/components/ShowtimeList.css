@@ -1,0 +1,54 @@
+/* Showtimes grouped by cinema: film card and film page. */
+
+.showtimes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.showtimes__cinema {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-muted);
+}
+
+.showtimes__times {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.showtime {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.showtime__hours {
+  font-size: 17px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+a.showtime:hover {
+  color: var(--color-pen);
+}
+
+.showtime--nolink .showtime__hours {
+  text-decoration: none;
+}
