@@ -1,14 +1,15 @@
 import { Suspense, lazy } from 'react'
 import App from './App'
-import { parseRoute, usePathname } from './lib/router'
+import { AccountBar } from './components/AccountBar'
+import { parseRoute, usePathname, type Route } from './lib/router'
 import { NotFound } from './pages/NotFound'
 
 // Pages other than home are loaded lazily.
 const Styleguide = lazy(() => import('./pages/Styleguide'))
 const FilmPage = lazy(() => import('./pages/FilmPage').then((m) => ({ default: m.FilmPage })))
+const LoginPage = lazy(() => import('./pages/LoginPage').then((m) => ({ default: m.LoginPage })))
 
-export default function Root() {
-  const route = parseRoute(usePathname())
+function Page({ route }: { route: Route }) {
   switch (route.page) {
     case 'home':
       return <App />
@@ -16,6 +17,12 @@ export default function Root() {
       return (
         <Suspense fallback={null}>
           <Styleguide />
+        </Suspense>
+      )
+    case 'login':
+      return (
+        <Suspense fallback={null}>
+          <LoginPage />
         </Suspense>
       )
     case 'film':
@@ -28,4 +35,15 @@ export default function Root() {
     case 'not-found':
       return <NotFound />
   }
+}
+
+export default function Root() {
+  const route = parseRoute(usePathname())
+  return (
+    <>
+      {/* The login page shows the account state itself. */}
+      {route.page !== 'login' && <AccountBar />}
+      <Page route={route} />
+    </>
+  )
 }

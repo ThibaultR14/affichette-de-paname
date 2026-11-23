@@ -13,6 +13,8 @@ describe('parseRoute', () => {
     ['', { page: 'home' }],
     ['/styleguide', { page: 'styleguide' }],
     ['/styleguide/', { page: 'styleguide' }],
+    ['/connexion', { page: 'login' }],
+    ['/connexion/', { page: 'login' }],
     ['/film/266', { page: 'film', tmdbId: 266 }],
     ['/film/266/', { page: 'film', tmdbId: 266 }],
     ['/film/abc', { page: 'not-found' }],

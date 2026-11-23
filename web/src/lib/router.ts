@@ -7,13 +7,14 @@ import {
 } from 'react'
 
 /**
- * Tiny client-side router: four routes do not need a dependency.
+ * Tiny client-side router: a handful of routes do not need a dependency.
  * `navigate` pushes a history entry (the film page must be reachable with « back »),
  * `usePathname` re-renders on navigation and on popstate.
  */
 export type Route =
   | { page: 'home' }
   | { page: 'styleguide' }
+  | { page: 'login' }
   | { page: 'film'; tmdbId: number }
   | { page: 'not-found' }
 
@@ -25,6 +26,7 @@ export function parseRoute(pathname: string): Route {
   const path = pathname.replace(/\/+$/, '')
   if (path === '') return { page: 'home' }
   if (path === '/styleguide') return { page: 'styleguide' }
+  if (path === '/connexion') return { page: 'login' }
   const film = FILM.exec(path)
   if (film && Number(film[1]) <= MAX_INT) return { page: 'film', tmdbId: Number(film[1]) }
   return { page: 'not-found' }

@@ -9,6 +9,9 @@ vi.mock('./lib/films', () => ({
   groupByDay: () => [],
 }))
 
+// No real Supabase client in tests (the env of .env.local would make one).
+vi.mock('./lib/supabase', () => ({ supabase: null }))
+
 function at(path: string) {
   window.history.replaceState(null, '', path)
 }
@@ -20,6 +23,12 @@ describe('Root', () => {
     at('/styleguide/')
     render(<Root />)
     expect(await screen.findByRole('heading', { level: 1, name: 'styleguide' })).toBeInTheDocument()
+  })
+
+  it('serves the login page on /connexion', async () => {
+    at('/connexion')
+    render(<Root />)
+    expect(await screen.findByRole('heading', { level: 1, name: 'connexion' })).toBeInTheDocument()
   })
 
   it('serves the home page on /', () => {

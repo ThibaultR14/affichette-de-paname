@@ -1,0 +1,35 @@
+.account-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8px 16px 0;
+  font-size: 15px;
+}
+
+@media (min-width: 640px) {
+  .account-bar {
+    padding: 8px 24px 0;
+  }
+}
+
+.account-bar__email {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-bar__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-ink);
+}
+
+.account-bar__link:hover {
+  color: var(--color-pen);
+}
