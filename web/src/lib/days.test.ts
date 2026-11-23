@@ -6,7 +6,9 @@ import {
   parisDate,
   parisDayRange,
   parisTime,
+  resolveDay,
   rollingWeek,
+  weekStarting,
 } from './days'
 
 describe('parisTime', () => {
@@ -107,5 +109,37 @@ describe('dayTitle', () => {
     expect(dayTitle('2026-11-22', '2026-11-22')).toBe('aujourd’hui')
     expect(dayTitle('2026-11-23', '2026-11-22')).toBe('demain')
     expect(dayTitle('2026-11-25', '2026-11-22')).toBe('mercredi 25')
+  })
+})
+
+describe('weekStarting', () => {
+  it('lists 7 days from the given one, across a month end', () => {
+    expect(weekStarting('2026-11-28')).toEqual([
+      '2026-11-28',
+      '2026-11-29',
+      '2026-11-30',
+      '2026-12-01',
+      '2026-12-02',
+      '2026-12-03',
+      '2026-12-04',
+    ])
+  })
+})
+
+describe('resolveDay', () => {
+  const week = weekStarting('2026-11-23')
+
+  it('keeps a day of the window', () => {
+    expect(resolveDay('2026-11-23', week)).toBe('2026-11-23')
+    expect(resolveDay('2026-11-29', week)).toBe('2026-11-29')
+  })
+
+  it('falls back to today when missing, malformed or outside the window', () => {
+    expect(resolveDay(null, week)).toBe('2026-11-23')
+    expect(resolveDay('', week)).toBe('2026-11-23')
+    expect(resolveDay('demain', week)).toBe('2026-11-23')
+    expect(resolveDay('2026-13-40', week)).toBe('2026-11-23')
+    expect(resolveDay('2026-11-22', week)).toBe('2026-11-23')
+    expect(resolveDay('2026-11-30', week)).toBe('2026-11-23')
   })
 })
