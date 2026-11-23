@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { Badge } from './Badge'
 import { Button } from './Button'
 import { ActiveFilterChip, Chip } from './Chip'
+import { dayLabel } from '../lib/days'
 import { DayStrip } from './DayStrip'
 import { FilmCard, type CinemaShowtimes } from './FilmCard'
 import { ThemeToggle } from './ThemeToggle'
@@ -56,6 +57,44 @@ describe('DayStrip', () => {
     expect(buttons[1]).not.toHaveAttribute('aria-current')
     fireEvent.click(buttons[3])
     expect(onSelect).toHaveBeenCalledWith('2026-11-25')
+  })
+
+  it('is a row of native buttons, reachable with Tab', () => {
+    render(<DayStrip days={days} today="2026-11-22" selected="2026-11-22" />)
+    for (const button of screen.getAllByRole('button')) {
+      expect(button.tagName).toBe('BUTTON')
+      expect(button).toHaveAttribute('type', 'button')
+      expect(button).not.toHaveAttribute('tabindex')
+    }
+  })
+
+  it('scrolls the strip, not the page, to show the selected day', () => {
+    // 4 buttons of 80 px in a 200 px wide strip: « mer. 25 » sits at 240-320 px.
+    const rect = (left: number, width: number) => ({ left, right: left + width }) as DOMRect
+    const spy = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (
+      this: Element,
+    ) {
+      if (this.tagName === 'NAV') return rect(0, 200)
+      const index = days.findIndex((d) => this.textContent === dayLabel(d, '2026-11-22'))
+      const scrollLeft = (this.closest('nav') as HTMLElement).scrollLeft
+      return rect(index * 80 - scrollLeft, 80)
+    })
+    const scrollPage = vi.fn()
+    const original = Element.prototype.scrollIntoView
+    Element.prototype.scrollIntoView = scrollPage
+    try {
+      const { rerender } = render(<DayStrip days={days} today="2026-11-22" selected="2026-11-25" />)
+      const strip = screen.getByRole('navigation', { name: 'jours' })
+      expect(strip.scrollLeft).toBe(120)
+      rerender(<DayStrip days={days} today="2026-11-22" selected="2026-11-23" />)
+      expect(strip.scrollLeft).toBe(80)
+      rerender(<DayStrip days={days} today="2026-11-22" selected="2026-11-24" />)
+      expect(strip.scrollLeft).toBe(80)
+      expect(scrollPage).not.toHaveBeenCalled()
+    } finally {
+      spy.mockRestore()
+      Element.prototype.scrollIntoView = original
+    }
   })
 })
 
