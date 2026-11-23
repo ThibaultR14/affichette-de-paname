@@ -37,6 +37,10 @@ class FakeResponse:
             return self.body
         return json.dumps(self.body) if self.body is not None else ""
 
+    @property
+    def content(self) -> bytes:
+        return self.text.encode("utf-8")
+
 
 class FakeSession:
     """Returns the queued responses in order (an exception instance is raised instead)."""
