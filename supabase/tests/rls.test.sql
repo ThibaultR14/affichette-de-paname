@@ -2,7 +2,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(25);
+select plan(26);
 
 -- Fixtures, as the superuser: two users (the trigger creates their profiles), one
 -- favorite each, one film and one screening, one title match and one import run.
@@ -48,6 +48,9 @@ select throws_ok(
 -- anon: public data is readable
 set local role anon;
 select is((select count(*)::int from public.cinemas), 19, 'anon reads cinemas');
+select lives_ok(
+  'select coverage_until, last_import_ok, last_success_at from public.cinemas',
+  'anon reads the coverage of each cinema (#12)');
 select is((select count(*)::int from public.films), 1, 'anon reads films');
 select is((select count(*)::int from public.screenings), 1, 'anon reads screenings');
 

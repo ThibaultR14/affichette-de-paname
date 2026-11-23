@@ -177,6 +177,9 @@ def test_failed_cinema_is_left_untouched_others_continue():
     states = {c["id"]: c for c in db.tables["cinemas"]}
     assert states["louxor"]["last_import_ok"] is False
     assert states["louxor"]["coverage_until"] == "2026-11-22"  # kept
+    assert states["louxor"]["last_success_at"] == NOW.isoformat()  # kept
+    assert states["louxor"]["last_import_at"] == later.isoformat()
+    assert states["champo"]["last_success_at"] == later.isoformat()
     assert states["champo"]["last_import_ok"] is True
     last = db.tables["import_runs"][-len(SCARE_CINEMAS) :]
     louxor_run = next(r for r in last if r["cinema_id"] == "louxor")

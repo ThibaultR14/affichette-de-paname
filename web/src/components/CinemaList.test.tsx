@@ -1,15 +1,29 @@
 import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import type { Cinema } from '../lib/cinemas'
+import type { CinemaWithCoverage } from '../lib/cinemas'
 import { CinemaList } from './CinemaList'
 
-const cinemas: Cinema[] = Array.from({ length: 19 }, (_, i) => ({
+const NOW = new Date('2026-11-23T14:00:00Z') // lundi, 15:00 in Paris
+const fresh = {
+  coverageUntil: '2026-11-27',
+  lastSuccessAt: '2026-11-23T11:00:00Z',
+  lastImportOk: true,
+}
+const cinemas: CinemaWithCoverage[] = Array.from({ length: 19 }, (_, i) => ({
   id: `salle-${i}`,
   name: `Salle ${i}`,
   arrondissement: 5,
   acceptsUgc: true,
+  ...fresh,
 }))
-cinemas[18] = { id: 'etoile', name: "Club de l'Étoile", arrondissement: 17, acceptsUgc: false }
+cinemas[18] = {
+  id: 'etoile',
+  name: "Club de l'Étoile",
+  arrondissement: 17,
+  acceptsUgc: false,
+  ...fresh,
+}
+const FAILED = '(on n’a pas pu mettre à jour cette salle aujourd’hui)'
 
 describe('CinemaList', () => {
   it('says it is loading first', () => {
@@ -33,6 +47,30 @@ describe('CinemaList', () => {
   it('writes 1er for the first arrondissement', async () => {
     render(<CinemaList load={() => Promise.resolve([{ ...cinemas[0], arrondissement: 1 }])} />)
     expect(await screen.findByText('1er')).toBeInTheDocument()
+  })
+
+  it('shows how far the programme of each cinema is known', async () => {
+    render(<CinemaList load={() => Promise.resolve(cinemas)} now={NOW} />)
+    const items = await screen.findAllByRole('listitem')
+    expect(
+      within(items[0]).getByText('programme connu jusqu’au ven. 27 · mis à jour il y a 3 h'),
+    ).toBeInTheDocument()
+    expect(within(items[0]).queryByText(FAILED)).not.toBeInTheDocument()
+  })
+
+  it('says when the latest import of a cinema failed, with the last known programme', async () => {
+    const failed = { ...cinemas[0], lastSuccessAt: '2026-11-21T14:00:00Z', lastImportOk: false }
+    render(<CinemaList load={() => Promise.resolve([failed])} now={NOW} />)
+    expect(await screen.findByText(FAILED)).toBeInTheDocument()
+    expect(
+      screen.getByText('programme connu jusqu’au ven. 27 · mis à jour il y a 2 j'),
+    ).toBeInTheDocument()
+  })
+
+  it('says when a cinema has never been imported', async () => {
+    const never = { ...cinemas[0], coverageUntil: null, lastSuccessAt: null, lastImportOk: null }
+    render(<CinemaList load={() => Promise.resolve([never])} now={NOW} />)
+    expect(await screen.findByText('pas encore de programme pour cette salle')).toBeInTheDocument()
   })
 
   it('says so when there is no cinema yet', async () => {

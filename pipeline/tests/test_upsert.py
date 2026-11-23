@@ -45,6 +45,7 @@ def test_first_import_writes_rows_and_cinema_state():
     assert champo["last_import_ok"] is True
     assert champo["coverage_until"] == "2026-11-28"
     assert champo["last_import_at"] == NOW.isoformat()
+    assert champo["last_success_at"] == NOW.isoformat()
 
 
 def test_rerun_creates_no_duplicate_and_keeps_first_seen():
@@ -131,10 +132,13 @@ def test_mark_failed_touches_only_the_cinema_state():
     fake = db()
     sync_cinema(fake, "champo", [(show(1, TOMORROW), 1)], WINDOW, NOW)
     before = [dict(r) for r in fake.tables["screenings"]]
-    mark_failed(fake, "champo", NOW + timedelta(days=1))
+    later = NOW + timedelta(days=1)
+    mark_failed(fake, "champo", later)
     assert fake.tables["screenings"] == before
     (champo,) = [c for c in fake.tables["cinemas"] if c["id"] == "champo"]
     assert champo["last_import_ok"] is False
+    assert champo["last_import_at"] == later.isoformat()  # last attempt
+    assert champo["last_success_at"] == NOW.isoformat()  # last success kept
     assert champo["coverage_until"] == "2026-11-23"
 
 

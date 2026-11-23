@@ -12,6 +12,7 @@ it('shows every base component', () => {
     'puces',
     'pastilles',
     'bandeau des 7 jours',
+    "couverture d'une salle",
     'cartes film',
   ]) {
     expect(screen.getByRole('heading', { level: 2, name: section })).toBeInTheDocument()

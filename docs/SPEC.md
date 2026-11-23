@@ -93,6 +93,7 @@ cinemas
   source           text             -- source d'import retenue (cf. spike #1)
   source_ref       text             -- identifiant de la salle dans cette source
   last_import_at, last_import_ok, coverage_until (date)
+  last_success_at  timestamptz      -- dernier import réussi (« mis à jour il y a »)
 
 films                                -- uniquement les films TMDB rencontrés (séances ou favoris)
   tmdb_id          int PK

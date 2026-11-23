@@ -4,6 +4,7 @@ import { Badge } from '../components/Badge'
 import { Button } from '../components/Button'
 import { DayStrip } from '../components/DayStrip'
 import { FilmCard, FilmGrid, type FilmCardProps } from '../components/FilmCard'
+import { CoverageLine } from '../components/CoverageLine'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { parisDate, rollingWeek } from '../lib/days'
 import './Styleguide.css'
@@ -179,6 +180,26 @@ export default function Styleguide() {
 
       <Section title="bandeau des 7 jours">
         <DayStrip days={week} today={today} selected={day} onSelect={setDay} />
+      </Section>
+
+      <Section title="couverture d'une salle">
+        {[
+          { name: 'Le Champo', ok: true, hours: 3 },
+          { name: 'Le Louxor', ok: false, hours: 51 },
+        ].map(({ name, ok, hours }) => (
+          <div key={name} className="styleguide__coverage">
+            <strong>{name}</strong>
+            <CoverageLine
+              coverage={{
+                coverageUntil: week[4],
+                lastSuccessAt: new Date(now.getTime() - hours * 3_600_000).toISOString(),
+                lastImportOk: ok,
+              }}
+              today={today}
+              now={now}
+            />
+          </div>
+        ))}
       </Section>
 
       <Section title="cartes film">
