@@ -1,5 +1,10 @@
 # Journal des décisions
 
+## 2026-11-23 - Dulac : clé = id de séance Dulac, doublons fusionnés par salle et heure, pas d'année tirée de `release_date`
+- Contexte : l'API Dulac (Reflet Médicis, #24) renvoie parfois la même séance deux fois (deux fiches film pour *Mysterious Skin*). Son champ `year` vaut presque toujours 0, et `release_date` est la date de sortie **ou de ressortie** en France (2026 pour *Pierre ou les ambiguïtés*).
+- Décision : `source_key = dulac:<salle>:<id de séance>`. Les séances d'une même salle de projection à la même heure sont fusionnées, en gardant la fiche la plus complète. `year_hint` ne vient que de `year > 0`.
+- Alternatives écartées : l'id `showsession` de la billetterie, lu dans `booking_url` (partagé par les doublons, mais absent tant que la réservation n'est pas ouverte : la clé changerait, ce qui donne une annulation plus une nouvelle séance) ; l'année de `release_date` (le ±1 rejetterait le bon film pour chaque ressortie, cas courant en patrimoine).
+
 ## 2026-11-23 - Échec d'import : une issue GitHub par salle, sans commentaire
 - Contexte : #13 demande de prévenir l'admin quand une salle échoue (question ouverte 4 de la SPEC).
 - Décision : `report.py` ouvre `import en échec : <cinema_id>` (label `import`) avec le `GITHUB_TOKEN` du job. Si une issue ouverte porte déjà ce titre, rien n'est créé ni commenté (pas de bruit quotidien). Un run qui échoue en entier (code 2) ouvre `import en échec : global`. Fermeture à la main. Le workflow se réactive lui-même via l'API après chaque run planifié, pour que GitHub ne coupe pas le cron au bout de 60 jours sans commit.

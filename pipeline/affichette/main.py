@@ -38,6 +38,7 @@ from affichette.report import (
     write_step_summary,
 )
 from affichette.sources import Cinema, Source, SourceError
+from affichette.sources.dulac import DulacSource
 from affichette.sources.scare import ScareSource
 from affichette.tmdb import Tmdb, TmdbError
 from affichette.upsert import mark_failed, sync_cinema
@@ -224,7 +225,8 @@ def main(argv: list[str] | None = None) -> int:
         db: Any = DryRunDb(real_db) if args.dry_run else real_db
         tmdb = Tmdb()
         matcher = Matcher(tmdb, store=DbTitleMatchStore(db))
-        report = run(db, tmdb, {"scare": ScareSource()}, matcher, _now(), args.cinema)
+        sources: dict[str, Source] = {"scare": ScareSource(), "dulac": DulacSource()}
+        report = run(db, tmdb, sources, matcher, _now(), args.cinema)
     except UsageError as exc:
         log.error("%s", exc)
         return 2
