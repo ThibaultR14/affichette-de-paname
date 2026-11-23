@@ -26,7 +26,7 @@ Légende : ✅ fourni, ◐ partiel ou en texte libre, ✗ absent, ? non vérifi�
 | Sept Parnassiens | SCARE (événements) · Webedia en attente | ◐ · ~18 j | ✗ · ✅ | ✗ · ✅ | ◐ · ✅ | idem | V1 partiel, accord demandé |
 | Épée de Bois | SCARE (événements) · Webedia en attente | ◐ · ~18 j | ✗ · ✅ | ✗ · ✅ | ◐ · ✅ | idem | V1 partiel, accord demandé |
 | Reflet Médicis | API Dulac `/api/home-bootstrap` | dense jusqu'au mardi, puis quelques séances | ✅ VF/VOST | ✗ (champ vide) | ✅ ticketingcine | robots `Allow: /`, CGU à lire avant la mise en ligne | **V1 (#24)** |
-| Filmothèque du Quartier Latin | HTML (grille de la semaine) | semaine en cours (mer. → mar.) | ? | ◐ texte (« numérique 4K ») | ✗ (lien générique) | robots vide, mentions légales sans clause | #14 |
+| Filmothèque du Quartier Latin | HTML (accueil + fiches film) | semaine en cours (mer. → mar.), quelques séances de la suivante | ✗ | ✅ texte (« numérique 4K / 2K ») | ✗ (lien générique) | robots vide, mentions légales sans clause | **V1 (#25)** |
 | Espace Saint-Michel | HTML (fiches film) | semaine en cours | ? | ◐ texte | ✗ (générique) | robots WP classique, CGU ? | #14 |
 | Cinéma des Cinéastes | HTML (sélecteur de jours) | 7 j | ◐ | ? | ? | robots vide, CGU ? | #14 (à creuser : séances absentes du HTML serveur) |
 | Club de l'Étoile | HTML `/programmation/` | ciné-clubs ponctuels (~10 dates) | ✅ (dans l'URL) | ✗ | ✅ Cotecine | robots `Allow: /` | #14 |
@@ -89,7 +89,7 @@ Une fiche par salle (adresse, historique, lien vers le site), mais **aucune séa
 - Un seul adaptateur couvrirait les 8 salles. Il ne sera écrit qu'après un accord écrit.
 
 ### 5. Sites en HTML
-- **Filmothèque** : WordPress, grille de la semaine. **Espace Saint-Michel** : WordPress, fiches film (« Horaires du 18 au 24 Novembre »). Sur le site d'Espace Saint-Michel, j'ai vu un lien de spam dans le pied de page : il faut parser défensivement.
+- **Filmothèque** : WordPress, grille de la semaine. Implémenté dans #25 (`sources/filmotheque.py`) : les séances sont lues sur les fiches film, parce que les grilles de l'accueil ne donnent le jour que par une position CSS. Le 23/11 : 44 films listés, 23 séances dans la fenêtre (programme publié jusqu'au mardi, plus 2 séances de la semaine suivante). TMDB : 14 films sur 17. Manqués : *La femme et le pantin (The Devil is a Woman)*, *The Hand*, *Ohong Village*. **Espace Saint-Michel** : WordPress, fiches film (« Horaires du 18 au 24 Novembre »). Sur le site d'Espace Saint-Michel, j'ai vu un lien de spam dans le pied de page : il faut parser défensivement.
 - **Cinéma des Cinéastes** : PHP, sélecteur de 7 jours, mais le détail des séances n'est pas dans le HTML rendu par le serveur. Le chargement est à identifier dans #14.
 - **Club de l'Étoile** : Next.js SSR, liens Cotecine qui portent la date et la version (`/reserver/F<film>/D<epoch>/<VO|VF>/<séance>/`). On ne relit que ces liens publiés sur le site de la salle, sans appeler Cotecine.
 - **Cotecine** (billetterie de Christine, Écoles, Archipel…) : `robots.txt` = `Disallow: /*`. On ne le collecte pas.

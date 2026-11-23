@@ -10,7 +10,8 @@
 -- source / source_ref: see docs/spikes/01-sources.md.
 --   scare   -> source_ref = exact `cinenom` in the SCARE dataset
 --   dulac   -> source_ref = cinema node id in the Dulac API (`cinemas_by_id`)
---   html    -> scraped from the cinema website (#14)
+--   filmotheque -> HTML of lafilmotheque.fr (home page + film pages, #25), no source_ref
+--   html    -> scraped from the cinema website, adapter still to write (#14)
 --   webedia -> blocked until written consent (#29, #30)
 --   none    -> no usable source yet
 -- lat / lng: left null until V2.
@@ -21,7 +22,7 @@ insert into public.cinemas
 values
   ('filmotheque', 'Filmothèque du Quartier Latin', '9 rue Champollion, 75005 Paris', 5,
    'https://lafilmotheque.fr/', 'https://lafilmotheque.fr/',
-   true, '2026-11-22', 'html', null),
+   true, '2026-11-22', 'filmotheque', null),
   ('champo', 'Le Champo', '51 rue des Écoles, 75005 Paris', 5,
    'https://www.cinema-lechampo.com/', 'https://www.cinema-lechampo.com/films/horaires.html',
    true, '2026-11-22', 'scare', 'Le Champo'),

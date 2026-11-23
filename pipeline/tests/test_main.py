@@ -9,9 +9,11 @@ from affichette.main import UsageError, error_message, run
 from affichette.matching import DbTitleMatchStore, Matcher
 from affichette.sources import SourceError
 from affichette.sources.dulac import DulacSource
+from affichette.sources.filmotheque import FilmothequeSource
 from affichette.sources.scare import ScareSource
 from affichette.tmdb import Cached
 from tests.fakes import FakeDb, FakeResponse, FakeSession, fixture
+from tests.test_filmotheque import three_films_source
 
 NOW = datetime(2026, 11, 22, 4, 0, tzinfo=UTC)
 
@@ -138,6 +140,37 @@ def test_dulac_and_scare_in_the_same_run():
     reflet = [r for r in db.tables["screenings"] if r["cinema_id"] == "reflet-medicis"]
     assert all(r["source_key"].startswith("dulac:reflet-medicis:") for r in reflet)
     assert "christine" not in results  # source "none"
+
+
+def test_filmotheque_in_a_run():
+    rows = [*cinemas(), {"id": "filmotheque", "name": "Filmo", "source": "filmotheque"}]
+    db = FakeDb(now=NOW, cinemas=rows)
+    tmdb = FakeTmdb()
+    matcher = Matcher(tmdb, overrides={}, store=DbTitleMatchStore(db), now=NOW)
+    source: FilmothequeSource = three_films_source()[0]
+    report = run(db, tmdb, {"filmotheque": source}, matcher, NOW, clock=lambda: NOW)
+    assert not report.failed
+    (result,) = report.results
+    # [22/11, 29/11[: Taxi Driver 7, Ohong Village 6, Adieu Philippine 1.
+    assert (result.cinema_id, result.n_screenings) == ("filmotheque", 14)
+    assert result.coverage_until.isoformat() == "2026-11-27"
+    saved = db.tables["screenings"]
+    assert all(r["source_key"].startswith("filmotheque:") for r in saved)
+    assert all(r["booking_url"] is None for r in saved)
+
+
+def test_unreadable_filmotheque_page_keeps_known_screenings():
+    rows = [*cinemas(), {"id": "filmotheque", "name": "Filmo", "source": "filmotheque"}]
+    db = FakeDb(now=NOW, cinemas=rows)
+    tmdb = FakeTmdb()
+    matcher = Matcher(tmdb, overrides={}, store=DbTitleMatchStore(db), now=NOW)
+    run(db, tmdb, {"filmotheque": three_films_source()[0]}, matcher, NOW, clock=lambda: NOW)
+    src, session, _ = three_films_source()
+    broken = session.responses[1].body.replace("Lundi 23", "Lun. 23")  # markup change
+    session.responses[1] = FakeResponse(200, broken)
+    report = run(db, tmdb, {"filmotheque": src}, matcher, NOW, clock=lambda: NOW)
+    assert [r.cinema_id for r in report.failed] == ["filmotheque"]
+    assert all(r["cancelled_at"] is None for r in db.tables["screenings"])
 
 
 def test_rerun_is_idempotent():
@@ -283,6 +316,7 @@ def cli(monkeypatch):
     monkeypatch.setattr(main_mod, "Tmdb", FakeTmdb)
     monkeypatch.setattr(main_mod, "ScareSource", lambda: source["factory"]())
     monkeypatch.setattr(main_mod, "DulacSource", dulac_api)
+    monkeypatch.setattr(main_mod, "FilmothequeSource", lambda: three_films_source()[0])
     monkeypatch.setattr(main_mod, "_now", lambda: NOW)
     for var in ("GITHUB_TOKEN", "GITHUB_REPOSITORY", "GITHUB_STEP_SUMMARY"):
         monkeypatch.delenv(var, raising=False)

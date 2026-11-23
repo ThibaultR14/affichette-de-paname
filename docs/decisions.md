@@ -1,5 +1,10 @@
 # Journal des décisions
 
+## 2026-11-23 - Filmothèque : séances lues sur les fiches film, heure publiée gardée
+- Contexte : lafilmotheque.fr (#25) donne les séances de deux façons. Les grilles de l'accueil placent chaque séance par position CSS, sans jour en clair. Les fiches `/films/<slug>/` donnent salle, jour (« Mercredi 18 », sans mois) et heure, plus le réalisateur et le format. Le site précise que « le film débute 10 min après ouverture de la séance ».
+- Décision : l'accueil ne sert qu'à lister les films des deux semaines, puis on charge chaque fiche (environ 45 requêtes, 1 s d'écart). Le jour est résolu vers l'unique date de [J-7, J+21] qui a ce jour de semaine et ce quantième. Une heure avant 5 h compte pour la nuit suivante. `source_key = filmotheque:<slug>:<R|B>:<heure de Paris>`. Une seule fiche en échec, ou une salle, un jour ou une heure illisible, fait échouer la salle, pour ne pas annuler ses séances. On garde l'heure publiée (ouverture de séance), sans ajouter les 10 min. Ajout de `beautifulsoup4` (parseur `html.parser`), qui resservira pour les autres sites HTML.
+- Alternatives écartées : lire les grilles de l'accueil (une seule requête, mais le jour dépend d'un pourcentage CSS) ; les cartes de l'accueil seulement (pas de semaine suivante, ni réalisateur, ni format) ; décaler l'heure de 10 min (l'heure ne correspondrait plus à celle du site de la salle).
+
 ## 2026-11-23 - Dulac : clé = id de séance Dulac, doublons fusionnés par salle et heure, pas d'année tirée de `release_date`
 - Contexte : l'API Dulac (Reflet Médicis, #24) renvoie parfois la même séance deux fois (deux fiches film pour *Mysterious Skin*). Son champ `year` vaut presque toujours 0, et `release_date` est la date de sortie **ou de ressortie** en France (2026 pour *Pierre ou les ambiguïtés*).
 - Décision : `source_key = dulac:<salle>:<id de séance>`. Les séances d'une même salle de projection à la même heure sont fusionnées, en gardant la fiche la plus complète. `year_hint` ne vient que de `year > 0`.
